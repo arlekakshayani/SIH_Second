@@ -1,0 +1,21 @@
+# Core Dependencies for Real-time Airfare Price Index Backend
+pydantic>=2.8.0
+pandas>=2.2.0
+numpy>=1.26.0
+pyarrow>=15.0.0
+sqlalchemy>=2.0.0
+
+# Scraping & Resilience
+playwright>=1.40.0
+fake-useragent>=1.5.0
+requests>=2.31.0
+urllib3>=2.2.0
+
+# Scheduler & Background Tasks
+apscheduler>=3.10.0
+
+# Optional High-Performance Ingestion
+curl_cffi>=0.7.0; sys_platform != "win32" or python_version < "3.13"
+
+# Testing & Quality
+pytest>=8.0.0
