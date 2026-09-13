@@ -1,6 +1,0 @@
-horizon_code,advance_days,purchasing_weight,purchasing_weight_pct,description
-T1,1,0.15,15.0,Last-minute emergency and high-priority corporate booking
-T7,7,0.35,35.0,Short-horizon business and urgent personal travel
-T15,15,0.25,25.0,Standard planned domestic travel
-T30,30,0.15,15.0,Advance baseline and vacation travel
-T45,45,0.1,10.0,Early-bird discount and low-fare baseline
