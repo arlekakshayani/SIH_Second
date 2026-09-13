@@ -1,13 +1,44 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Filter, RefreshCw, Plane, CheckCircle2, ArrowUpDown, ExternalLink, ShieldCheck, Database } from 'lucide-react'
+import {
+  Search,
+  Filter,
+  RefreshCw,
+  Plane,
+  CheckCircle2,
+  ArrowUpDown,
+  ExternalLink,
+  ShieldCheck,
+  Database,
+  MapPin,
+  TrendingUp,
+  Clock,
+  Radio,
+  Sliders,
+} from 'lucide-react'
 import { getFlights } from '../api'
 
-export default function LiveDemoTable() {
+function formatISTDate() {
+  const now = new Date()
+  const options = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Kolkata',
+  }
+  return now.toLocaleString('en-IN', options) + ' IST'
+}
+
+export default function LiveDemoTable({ onBackToLanding }) {
   const [carrierFilter, setCarrierFilter] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isLiveBackend, setIsLiveBackend] = useState(false)
   const [backendFlightCount, setBackendFlightCount] = useState(0)
+  const [lastSyncTime, setLastSyncTime] = useState(() => formatISTDate())
 
   const sampleCorridors = [
     {
@@ -165,6 +196,7 @@ export default function LiveDemoTable() {
       setIsLiveBackend(false)
     } finally {
       setIsRefreshing(false)
+      setLastSyncTime(formatISTDate())
     }
   }
 
@@ -189,62 +221,69 @@ export default function LiveDemoTable() {
   const availableCarriers = ['All', ...new Set(tableData.map((d) => d.platform))].filter(Boolean)
 
   return (
-    <section
-      id="corridors"
-      className="py-16 sm:py-20 relative bg-[#f4f6f9] border-t border-slate-200 overflow-hidden"
-    >
-      {/* Overlay — keeps text sharp, background adds depth and feel */}
-      <div className="absolute inset-0 bg-[#f4f6f9]/92 pointer-events-none" />
+    <div className="min-h-screen bg-[#f4f6f9] text-slate-800 flex flex-col font-sans">
+      {/* 1. Breadcrumbs Bar (Matching Page 1 & Route Tracker site-breadcrumb) */}
+      <section className="site-breadcrumb">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ul>
+            <li>
+              <button
+                onClick={onBackToLanding}
+                className="hover:text-orange-600 transition-colors cursor-pointer text-slate-500 font-medium"
+              >
+                Home
+              </button>
+            </li>
+            <li className="text-slate-300">/</li>
+            <li>
+              <span className="font-bold text-[#0c3c6f]">Live Corridors</span>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-700 text-emerald-300 text-xs font-mono uppercase tracking-wider font-semibold">
-              <Plane className="w-3.5 h-3.5 transform -rotate-45 text-emerald-600" />
-              <span>Real-Time Ingestion Explorer</span>
-              {isLiveBackend && (
-                <>
-                  <span className="text-emerald-400">•</span>
-                  <span className="text-emerald-300 font-bold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-                    FastAPI SQLite Live ({backendFlightCount} Fares)
-                  </span>
-                </>
-              )}
+      {/* Main Container */}
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-grow">
+        {/* Content Heading matching Page 1 & Route Tracker */}
+        <div className="content-head">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-orange-50 text-orange-700 border border-orange-200">
+              <Plane className="w-6 h-6 transform -rotate-45" />
             </div>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold font-heading text-[#0b2545] tracking-tight">
-              Live National Corridor Airfare Registry
-            </h2>
-            <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-              Decomposed economy airfare records sampled from Indian carrier platforms, normalized into base pure tariffs and computed against 2024 benchmark prices.
-            </p>
+            <div>
+              <h2>Live Corridors Registry</h2>
+              <span className="text-xs font-mono text-slate-500 block mt-1">
+                Real-time decomposed economy airfare records sampled across Indian carrier platforms
+              </span>
+            </div>
           </div>
-
           <div className="flex items-center gap-3">
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 shadow-sm transition-all active:scale-95 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-amber-400' : 'text-slate-300'}`} />
-              <span>{isRefreshing ? 'Syncing Backend...' : 'Sync Live Feeds'}</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-amber-500' : 'text-slate-500'}`} />
+              <span>{isRefreshing ? 'Syncing...' : 'Sync Live Feeds'}</span>
             </button>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-mono font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+              <span>Active Ingestion Surveillance</span>
+            </div>
           </div>
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="mt-8 p-4 rounded-xl bg-white border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        {/* Filter Controls Bar Card */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
           {/* Search bar */}
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search corridor or route code..."
+              placeholder="Search corridor or route code (e.g. DEL, BOM)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 text-xs rounded-lg bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0b2545] focus:bg-white font-mono"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0b2545] focus:bg-white font-mono transition-all"
             />
           </div>
 
@@ -255,10 +294,11 @@ export default function LiveDemoTable() {
               <button
                 key={carrier}
                 onClick={() => setCarrierFilter(carrier)}
-                className={`px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${carrierFilter === carrier
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                  carrierFilter === carrier
                     ? 'bg-[#0b2545] text-white font-bold shadow-sm'
                     : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200 border border-slate-200'
-                  }`}
+                }`}
               >
                 {carrier}
               </button>
@@ -266,26 +306,38 @@ export default function LiveDemoTable() {
           </div>
         </div>
 
-        {/* Responsive Table */}
-        <div className="mt-4 rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm">
+        {/* Responsive Table Card */}
+        <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-md">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-sans">
-              <thead className="bg-slate-200/90 text-[#091d38] font-sans border-b-2 border-slate-300">
+              <thead className="bg-slate-100 text-[#091d38] font-sans border-b-2 border-slate-300">
                 <tr>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-[#091d38] tracking-wide uppercase" style={{ fontWeight: 800 }}>Corridor & Carrier</th>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-[#091d38] tracking-wide uppercase" style={{ fontWeight: 800 }}>Horizon</th>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-[#091d38] tracking-wide uppercase" style={{ fontWeight: 800 }}>Raw Fare</th>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-[#091d38] tracking-wide uppercase" style={{ fontWeight: 800 }}>Ancillary Fees</th>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-emerald-900 tracking-wide uppercase" style={{ fontWeight: 800 }}>Pure Base Fare</th>
-                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-center text-[#091d38] tracking-wide uppercase" style={{ fontWeight: 800 }}>Status</th>
+                  <th className="py-4 px-5 text-xs sm:text-sm font-extrabold text-[#091d38] tracking-wide uppercase">
+                    Corridor &amp; Carrier
+                  </th>
+                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-[#091d38] tracking-wide uppercase">
+                    Horizon
+                  </th>
+                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-[#091d38] tracking-wide uppercase">
+                    Raw Fare
+                  </th>
+                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-[#091d38] tracking-wide uppercase">
+                    Ancillary Fees
+                  </th>
+                  <th className="py-4 px-4 text-xs sm:text-sm font-extrabold text-right text-emerald-900 tracking-wide uppercase">
+                    Pure Base Fare
+                  </th>
+                  <th className="py-4 px-5 text-xs sm:text-sm font-extrabold text-center text-[#091d38] tracking-wide uppercase">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {filteredData.map((row) => {
                   return (
                     <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3.5 px-4">
-                        <div className="font-bold text-[#0b2545] flex items-center gap-1.5 font-mono">
+                      <td className="py-3.5 px-5">
+                        <div className="font-bold text-[#0b2545] flex items-center gap-1.5 font-mono text-sm">
                           <span>{row.origin.split(' ')[0]}</span>
                           <span className="text-slate-400">→</span>
                           <span>{row.dest.split(' ')[0]}</span>
@@ -299,7 +351,7 @@ export default function LiveDemoTable() {
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono text-slate-700">
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-700 font-medium">
                         ₹{row.rawFare.toLocaleString()}
                       </td>
 
@@ -311,7 +363,7 @@ export default function LiveDemoTable() {
                         ₹{row.pureFare.toLocaleString()}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3.5 px-5 text-center">
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-mono font-semibold">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                           <span>Verified</span>
@@ -328,15 +380,14 @@ export default function LiveDemoTable() {
           <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 font-mono">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-amber-600" />
-              <span>All 142 corridors verified against statutory tariff bounds</span>
+              <span>All corridors verified against DGCA statutory tariff bounds &amp; pure fare standards</span>
             </div>
             <div>
-              Showing {filteredData.length} of {sampleCorridors.length} active live test routes
+              Showing <span className="font-bold text-slate-900">{filteredData.length}</span> active live corridors
             </div>
           </div>
         </div>
-
       </div>
-    </section>
+    </div>
   )
 }

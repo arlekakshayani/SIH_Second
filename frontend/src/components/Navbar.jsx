@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Terminal, Menu, X, ArrowRight, Plane, Activity, BarChart3, ShieldCheck } from 'lucide-react'
-import logoImage from './assets/logo.jpeg'
+import logoMark from './assets/logo-mark.png'
 
 export default function Navbar({ currentView, onNavigate }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -8,42 +8,32 @@ export default function Navbar({ currentView, onNavigate }) {
   const navItems = [
     { id: 'overview', name: 'Home', icon: Plane },
     { id: 'corridors', name: 'Live Corridors', icon: BarChart3 },
-    { id: 'radar', name: 'Route Radar', icon: Activity },
+    { id: 'radar', name: 'Route Tracker', icon: Activity },
     { id: 'pipeline-health', name: 'Pipeline Health', icon: ShieldCheck },
   ]
 
   return (
     <nav className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-20 sm:h-22">
 
           {/* 1. Left: Official NAI Logo & Branding */}
           <button
             onClick={() => onNavigate('overview')}
-            className="flex items-center gap-3 group text-left focus:outline-none"
+            className="flex items-center gap-3.5 sm:gap-4 group text-left focus:outline-none py-1.5"
             aria-label="National Airfare Index Home"
           >
-            {/* Logo container: clean, crisp, polished frame for previous logo */}
-            <div className="flex items-center justify-center h-12 px-2 rounded-xl bg-white border border-slate-200/90 shadow-sm group-hover:border-amber-400/80 group-hover:shadow transition-all overflow-hidden">
-              <img
-                src={logoImage}
-                alt="National Airfare Index (NAI) Logo"
-                className="h-10 w-auto max-w-[130px] object-contain group-hover:scale-105 transition-transform"
-              />
-            </div>
-
-            {/* Typography */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-base sm:text-lg font-black font-heading tracking-tight text-[#061426] group-hover:text-amber-700 transition-colors uppercase leading-tight">
-                  National Airfare Index
-                </span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-extrabold bg-amber-400 text-slate-950 uppercase tracking-wide shadow-2xs">
-                  NAI
-                </span>
-              </div>
-              <span className="text-[11px] font-medium text-slate-500 hidden sm:inline tracking-tight">
-                Ministry of Civil Aviation • Real-Time Tariff Surveillance
+            <img
+              src={logoMark}
+              alt="National Airfare Index (NAI) Emblem"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col justify-center leading-[1.04]">
+              <span className="text-lg sm:text-xl md:text-[22px] font-black font-heading text-[#0c3c6f] tracking-tight group-hover:text-[#0284c7] transition-colors">
+                National
+              </span>
+              <span className="text-lg sm:text-xl md:text-[22px] font-black font-heading text-[#0c3c6f] tracking-tight group-hover:text-[#0284c7] transition-colors">
+                Airfare Index
               </span>
             </div>
           </button>
