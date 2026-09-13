@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" style="color-scheme: light;">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>NAI - National Airfare Index | Real-Time Aviation Tariff Surveillance</title>
+  <meta name="description"
+    content="NAI (National Airfare Index) Platform - Dynamic Civil Aviation Tariff Surveillance & National Inflation Tracking (SIH 2026)" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN for instant styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ashokanavy: {
+              950: '#06162a',
+              900: '#091d38',
+              800: '#0b2545',
+              700: '#10335e',
+              600: '#174785',
+              500: '#1d5ca8'
+            },
+            saffron: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            },
+            indiagreen: {
+              500: '#10b981',
+              600: '#059669',
+              700: '#15803d',
+              800: '#166534'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            cinzel: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body
+  class="bg-[#f4f6f9] text-slate-800 antialiased selection:bg-amber-500 selection:text-white overflow-x-hidden min-h-screen">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
