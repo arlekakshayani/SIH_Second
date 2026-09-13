@@ -5,6 +5,7 @@ import LivePipelineHealth from './components/LivePipelineHealth'
 import LiveDemoTable from './components/LiveDemoTable'
 import Dashboard from './components/Dashboard'
 import RouteAnalytics from './components/RouteAnalytics'
+import Footer from './components/Footer'
 
 export default function App() {
   // 'overview' | 'pipeline-health' | 'corridors' | 'radar' | 'dashboard'
@@ -57,11 +58,11 @@ export default function App() {
         )}
 
         {currentView === 'pipeline-health' && (
-          <LivePipelineHealth />
+          <LivePipelineHealth onBackToLanding={() => handleNavigate('overview')} />
         )}
 
         {currentView === 'corridors' && (
-          <LiveDemoTable />
+          <LiveDemoTable onBackToLanding={() => handleNavigate('overview')} />
         )}
 
         {currentView === 'radar' && (
@@ -78,6 +79,9 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Official Project & MoSPI Footer */}
+      <Footer onNavigate={handleNavigate} />
 
     </div>
   )

@@ -179,7 +179,7 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
   const [showOriginSuggestions, setShowOriginSuggestions] = useState(false)
   const [showDestSuggestions, setShowDestSuggestions] = useState(false)
 
-  const [dateRange, setDateRange] = useState('1d') // '1d' | '7d' | '30d'
+  const [dateRange, setDateRange] = useState('1d') // '1d' | '7d' | '15d' | '30d'
   const [carrierFilter, setCarrierFilter] = useState('all') // 'all' | 'direct' | 'ota'
   const [activeGraphTab, setActiveGraphTab] = useState('hourly') // 'hourly' | 'daily'
   const [hoveredHourlyPoint, setHoveredHourlyPoint] = useState(null)
@@ -400,59 +400,64 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
   return (
     <div className="min-h-screen bg-[#f4f6f9] text-slate-800 flex flex-col font-sans">
 
-      {/* Top Navigation Bar */}
-      <div className="bg-[#0b2545] border-b border-[#163863] text-xs py-2.5 px-4 sm:px-8 flex items-center justify-between text-slate-200">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onBackToLanding}
-            className="inline-flex items-center gap-1 text-slate-100 hover:text-white font-medium px-2.5 py-1 rounded bg-[#133560] border border-[#234f85] transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Public Portal</span>
-          </button>
-          <button
-            onClick={onGoToDashboard}
-            className="inline-flex items-center gap-1 text-amber-300 hover:text-white font-medium px-2.5 py-1 rounded bg-[#133560] border border-[#234f85] transition-colors"
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>Admin Page</span>
-          </button>
-          <span className="hidden sm:inline text-slate-400">|</span>
-          <span className="hidden sm:inline font-semibold text-white">
-            Corridor Surveillance
-          </span>
+      {/* 1. Breadcrumbs Bar (Matching Page 1 site-breadcrumb) */}
+      <section className="site-breadcrumb">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ul>
+            <li>
+              <button
+                onClick={onBackToLanding}
+                className="hover:text-orange-600 transition-colors cursor-pointer text-slate-500 font-medium"
+              >
+                Home
+              </button>
+            </li>
+            <li className="text-slate-300">/</li>
+            <li>
+              <span className="font-bold text-[#0c3c6f]">Route Tracker</span>
+            </li>
+          </ul>
         </div>
-
-        <div className="flex items-center gap-2 text-[11px] font-mono text-emerald-300">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Corridor Surveillance Active</span>
-        </div>
-      </div>
+      </section>
 
       {/* Main Container */}
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-grow">
 
+        {/* Content Heading matching Page 1 */}
+        <div className="content-head">
+          <div>
+            <h2>Route Tracker</h2>
+            <span className="text-xs font-mono text-slate-500 block mt-1">
+              High-frequency corridor tariff surveillance &amp; real-time carrier fee decomposition
+            </span>
+          </div>
+          <span className="text-xs font-mono px-3 py-1 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span>Corridor Surveillance Active</span>
+          </span>
+        </div>
+
         {/* Component 1: Starting Point & Destination Point Selector Header */}
-        <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 shadow-sm space-y-5">
+        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-md space-y-5">
 
           {/* Top Row: Corridor Active Info & Telemetry Badge */}
           {!hasTracked ? (
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-[#0b2545] text-amber-400 flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 flex items-center justify-center shadow-xs">
                   <Radio className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-black text-slate-900 font-heading tracking-tight">
-                      FAI Index & Corridor Surveillance
-                    </h1>
+                    <h3 className="text-xl sm:text-2xl font-black text-[#0b2545] font-heading tracking-tight">
+                      Route Tracker &amp; Corridor Surveillance
+                    </h3>
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-blue-50 text-[#0b2545] border border-blue-200">
                       Step 1: Select Corridor
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 font-mono mt-1">
-                    Select starting point and destination point below, then click <strong className="text-[#0b2545]">"Track Route FAI Index"</strong> to compute metrics.
+                    Select starting point and destination point below, then click <strong className="text-[#0c3c6f]">"Track Route NAI Index"</strong> to compute metrics.
                   </p>
                 </div>
               </div>
@@ -465,12 +470,12 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
           ) : (
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-[#0b2545] text-amber-400 flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 flex items-center justify-center shadow-xs">
                   <Radio className="w-6 h-6 animate-pulse" />
                 </div>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-black text-slate-900 font-heading tracking-tight flex items-center gap-2">
+                    <h1 className="text-xl sm:text-2xl font-black text-[#0b2545] font-heading tracking-tight flex items-center gap-2">
                       <span className="text-[#0b2545]">{activeRoute.originCode}</span>
                       <span className="text-slate-400 text-base">➔</span>
                       <span className="text-[#0b2545]">{activeRoute.destCode}</span>
@@ -492,11 +497,11 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                 </div>
               </div>
 
-              {/* Quick Metrics Badge with Route FAI Index prominently displayed */}
+              {/* Quick Metrics Badge with Route NAI Index prominently displayed */}
               <div className="flex items-center gap-2.5 self-end lg:self-center">
                 <div className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3 text-xs font-mono">
                   <div>
-                    <span className="text-[#0b2545] text-[10px] block font-bold uppercase tracking-wider">Route FAI Index</span>
+                    <span className="text-[#0b2545] text-[10px] block font-bold uppercase tracking-wider">Route NAI Index</span>
                     <span className="text-[#0b2545] font-black text-sm">{displayedRouteIndex.toFixed(1)}</span>
                   </div>
                   <span className="text-slate-300">|</span>
@@ -695,14 +700,14 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
               </div>
             </div>
 
-            {/* 3. Observation Window (1D, 7D, 30D as requested) */}
+            {/* 3. Observation Window (1D, 7D, 15D, 30D) */}
             <div className="lg:col-span-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
               <label className="text-[11px] font-mono uppercase tracking-wider text-[#0b2545] font-bold mb-1.5 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#0b2545]" />
                 <span>Observation Window</span>
               </label>
               <div className="flex items-center gap-1.5">
-                {['1d', '7d', '30d'].map((r) => (
+                {['1d', '7d', '15d', '30d'].map((r) => (
                   <button
                     key={r}
                     onClick={() => setDateRange(r)}
@@ -719,7 +724,7 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
 
           </div>
 
-          {/* Action Row: Dedicated Button to Track Route FAI Index */}
+          {/* Action Row: Dedicated Button to Track Route NAI Index */}
           <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl">
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
               <span className="text-slate-500">Target Corridor:</span>
@@ -739,22 +744,22 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
               type="button"
               onClick={handleTrackRoute}
               disabled={isCalculating}
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#0b2545] hover:bg-[#133560] text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md active:scale-[0.99] transition-all disabled:opacity-75 cursor-pointer border border-[#163863]"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-sm hover:shadow active:scale-[0.99] transition-all disabled:opacity-75 cursor-pointer border border-amber-500/30"
             >
               {isCalculating ? (
                 <>
-                  <Activity className="w-4 h-4 text-amber-300 animate-spin" />
-                  <span>Computing Route FAI Index...</span>
+                  <Activity className="w-4 h-4 text-slate-950 animate-spin" />
+                  <span>Computing Route NAI Index...</span>
                 </>
               ) : (
                 <>
-                  <BarChart3 className="w-4 h-4 text-amber-300" />
+                  <BarChart3 className="w-4 h-4 text-slate-950" />
                   <span>
                     {hasTracked && originCode === trackedOriginCode && destCode === trackedDestCode
-                      ? 'Refresh Route FAI Index'
-                      : 'Track Route FAI Index'}
+                      ? 'Refresh Route NAI Index'
+                      : 'Track Route NAI Index'}
                   </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
                 </>
               )}
             </button>
@@ -764,31 +769,31 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
 
         {/* Conditional Rendering: Awaiting Route Tracking vs. Full Route Metrics & Surveillance */}
         {!hasTracked ? (
-          <div className="p-8 sm:p-12 rounded-xl bg-white border border-slate-200 shadow-sm text-center space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 text-[#0b2545] flex items-center justify-center mx-auto shadow-sm">
-              <BarChart3 className="w-8 h-8 text-[#0b2545]" />
+          <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 shadow-md text-center space-y-6">
+            <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-200 text-orange-700 flex items-center justify-center mx-auto shadow-xs">
+              <BarChart3 className="w-8 h-8 text-orange-700" />
             </div>
 
             <div className="max-w-xl mx-auto space-y-2">
-              <h3 className="text-xl font-bold text-slate-900 font-heading">
+              <h3 className="text-xl font-bold text-[#0b2545] font-heading">
                 Corridor Ready: {originAirport.code} ({originAirport.city}) ➔ {destAirport.code} ({destAirport.city})
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 font-mono leading-relaxed">
-                Starting and destination points have been selected. Click the button below to compute and display the official <strong className="text-[#0b2545]">Route FAI Index</strong>, clean fare metrics, hourly tariff surveillance graphs, and carrier fee decompositions.
+                Starting and destination points have been selected. Click the button below to compute and display the official <strong className="text-[#0c3c6f]">Route NAI Index</strong>, clean fare metrics, hourly tariff surveillance graphs, and carrier fee decompositions.
               </p>
             </div>
 
             {/* Visual list of what metrics will be displayed */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
-              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-[11px] font-mono font-bold text-[#0b2545] uppercase">1. Route FAI Index</div>
+              <div className="p-3.5 rounded-xl bg-[#f8fafc] border border-slate-200">
+                <div className="text-[11px] font-mono font-bold text-[#0b2545] uppercase">1. Route NAI Index</div>
                 <div className="text-xs text-slate-600 font-mono mt-0.5">Real-time normalized price index (Base: 100.0)</div>
               </div>
-              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div className="p-3.5 rounded-xl bg-[#f8fafc] border border-slate-200">
                 <div className="text-[11px] font-mono font-bold text-[#0b2545] uppercase">2. Tariff Metrics</div>
                 <div className="text-xs text-slate-600 font-mono mt-0.5">Average fare, distance, duration & flight frequency</div>
               </div>
-              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div className="p-3.5 rounded-xl bg-[#f8fafc] border border-slate-200">
                 <div className="text-[11px] font-mono font-bold text-[#0b2545] uppercase">3. Surveillance Graphs</div>
                 <div className="text-xs text-slate-600 font-mono mt-0.5">Hourly surveillance & daily 24h scraped means</div>
               </div>
@@ -799,18 +804,18 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                 type="button"
                 onClick={handleTrackRoute}
                 disabled={isCalculating}
-                className="inline-flex items-center gap-2.5 px-8 py-3 rounded-lg bg-[#0b2545] hover:bg-[#133560] text-white font-mono font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer border border-[#163863]"
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer border border-amber-500/30"
               >
                 {isCalculating ? (
                   <>
-                    <Activity className="w-4 h-4 text-amber-300 animate-spin" />
-                    <span>Computing Route FAI Index...</span>
+                    <Activity className="w-4 h-4 text-slate-950 animate-spin" />
+                    <span>Computing Route NAI Index...</span>
                   </>
                 ) : (
                   <>
-                    <BarChart3 className="w-4 h-4 text-amber-300" />
-                    <span>Track Route FAI Index ({originAirport.code} ➔ {destAirport.code})</span>
-                    <ArrowRight className="w-4 h-4 text-amber-300" />
+                    <BarChart3 className="w-4 h-4 text-slate-950" />
+                    <span>Track Route NAI Index ({originAirport.code} ➔ {destAirport.code})</span>
+                    <ArrowRight className="w-4 h-4 text-slate-950" />
                   </>
                 )}
               </button>
@@ -820,10 +825,10 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
           <>
             {/* 6-Card Route Metrics Display Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {/* Metric 1: Route FAI Index */}
+              {/* Metric 1: Route NAI Index */}
               <div className="p-4 rounded-xl bg-white border-2 border-[#0b2545] shadow-xs">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#0b2545] block">
-                  Route FAI Index
+                  Route NAI Index
                 </span>
                 <span className="text-2xl font-black text-[#0b2545] font-mono block mt-1">
                   {displayedRouteIndex.toFixed(1)}
@@ -904,16 +909,18 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
 
               {/* Header with View Tabs */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-[#0b2545]" />
-                    <h3 className="text-base font-bold text-slate-900 font-heading">
-                      Route Index Empirical Surveillance — {activeRoute.originCode} ➔ {activeRoute.destCode}
-                    </h3>
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-orange-50 text-orange-700 border border-orange-200">
+                    <BarChart3 className="w-5 h-5" />
                   </div>
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    High-frequency corridor index tracking: Hourly fluctuations and Daily 24h scraped averages
-                  </p>
+                  <div>
+                    <h3 className="text-base font-bold text-[#0b2545] font-heading">
+                      Route Index Empirical Surveillance &mdash; {activeRoute.originCode} ➔ {activeRoute.destCode}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-0.5 font-mono">
+                      High-frequency corridor index tracking: Hourly fluctuations and Daily 24h scraped averages
+                    </p>
+                  </div>
                 </div>
 
                 {/* View Switcher Tabs */}
@@ -1207,13 +1214,18 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
             <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 shadow-sm">
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 font-heading">
-                    Carrier & OTA Decomposition Comparison
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    Comparing Direct Airlines vs. Online Travel Aggregators on {activeRoute.originCode} ➔ {activeRoute.destCode} ({activeRoute.distance})
-                  </p>
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-orange-50 text-orange-700 border border-orange-200">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-[#0b2545] font-heading">
+                      Carrier &amp; OTA Decomposition Comparison
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-0.5 font-mono">
+                      Comparing Direct Airlines vs. Online Travel Aggregators on {activeRoute.originCode} ➔ {activeRoute.destCode} ({activeRoute.distance})
+                    </p>
+                  </div>
                 </div>
 
                 {/* Filter Pills */}
