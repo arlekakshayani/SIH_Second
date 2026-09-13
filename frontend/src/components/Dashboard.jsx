@@ -22,10 +22,17 @@ import {
   Play
 } from 'lucide-react'
 import { getLatestIndex, getIndexHistory, getFlights } from '../api'
+import {
+  calculateNationalIndex,
+  getDailyTrajectory,
+  getCorridorSpikes,
+  getAllRoutes,
+  getEconometricMetadata
+} from '../services/airfareCalculationEngine'
 
-export default function Dashboard({ onBackToLanding, onGoToRouteAnalytics }) {
-  const [method, setMethod] = useState('jevons') // 'jevons' | 'laspeyres'
-  const [bookingWindow, setBookingWindow] = useState('7d') // '0-3d' | '7d' | '15d' | '30d'
+export default function Dashboard({ onBackToLanding, onGoToRouteAnalytics, onOpenMethodology }) {
+  const [method, setMethod] = useState('laspeyres') // 'laspeyres' | 'jevons'
+  const [bookingWindow, setBookingWindow] = useState('all') // 'all' | '0-3d' | '7d' | '15d' | '30d'
   const [hoveredDataPoint, setHoveredDataPoint] = useState(null)
   const [isTerminalStreaming, setIsTerminalStreaming] = useState(true)
   const [logs, setLogs] = useState([
@@ -139,45 +146,39 @@ export default function Dashboard({ onBackToLanding, onGoToRouteAnalytics }) {
     }
   }, [])
 
-  // Method-specific index calculation with live backend binding
+  // Dynamic Econometric Engine Binding
+  const horizonFilterKey = useMemo(() => {
+    if (bookingWindow === '0-3d') return '1'
+    if (bookingWindow === '7d') return '7'
+    if (bookingWindow === '15d') return '15'
+    if (bookingWindow === '30d') return '30'
+    if (bookingWindow === '45d') return '45'
+    return 'all'
+  }, [bookingWindow])
+
+  const dynamicNatIndex = useMemo(() => {
+    return calculateNationalIndex('latest', method, horizonFilterKey)
+  }, [method, horizonFilterKey])
+
+  // Method-specific index calculation with live dynamic engine
   const currentKPIs = {
-    index: backendIndex
-      ? (method === 'jevons' ? backendIndex.toFixed(1) : (backendIndex * 1.025).toFixed(1))
-      : (method === 'jevons' ? '118.4' : '121.2'),
-    baseChange: backendIndex
-      ? `+${(backendIndex - 100).toFixed(1)}% Base`
-      : (method === 'jevons' ? '+18.4% Base' : '+21.2% Base'),
-    avgFare: method === 'jevons' ? '₹5,850' : '₹6,120',
-    activeRoutes: '142',
-    scrapedPoints: backendObservations ? `${backendObservations} Fares (DB)` : '12.4k/24h',
+    index: dynamicNatIndex.indexValue.toFixed(1),
+    baseChange: dynamicNatIndex.baseChangePct,
+    avgFare: method === 'jevons' ? '₹5,820' : '₹6,050',
+    activeRoutes: '25 Trunk Routes',
+    scrapedPoints: `${dynamicNatIndex.matchedObservations} Matched Fares`,
+    totalBaseExp: `₹${(dynamicNatIndex.totalBaseExpenditure / 10000000).toFixed(1)} Cr`,
   }
 
-  // 30-Day Time Series Data for Chart (with live fallback)
-  const defaultTimeSeriesData = [
-    { day: 1, date: 'Aug 06', index: 109.2, baseline: 100 },
-    { day: 3, date: 'Aug 08', index: 110.5, baseline: 100 },
-    { day: 5, date: 'Aug 10', index: 112.1, baseline: 100 },
-    { day: 8, date: 'Aug 13', index: 114.8, baseline: 100 },
-    { day: 11, date: 'Aug 16', index: 113.2, baseline: 100 },
-    { day: 14, date: 'Aug 19', index: 115.0, baseline: 100 },
-    { day: 17, date: 'Aug 22', index: 118.6, baseline: 100 },
-    { day: 20, date: 'Aug 25', index: 116.4, baseline: 100 },
-    { day: 23, date: 'Aug 28', index: 117.8, baseline: 100 },
-    { day: 26, date: 'Aug 31', index: 119.5, baseline: 100 },
-    { day: 28, date: 'Sep 02', index: 117.9, baseline: 100 },
-    { day: 30, date: 'Sep 04', index: 118.4, baseline: 100 },
-  ]
+  // 12-Day Historical Trajectory from actual observations
+  const timeSeriesData = useMemo(() => {
+    return getDailyTrajectory(method, horizonFilterKey)
+  }, [method, horizonFilterKey])
 
-  const timeSeriesData = backendHistory && backendHistory.length >= 2 ? backendHistory : defaultTimeSeriesData
-
-  // Peak fare spikes across top corridors
-  const corridorSpikes = [
-    { corridor: 'DEL ✈️ BOM', peakFare: '₹8,420', spike: '+42%', base: '₹5,900', pct: 92, carrier: 'IndiGo' },
-    { corridor: 'BOM ✈️ BLR', peakFare: '₹6,890', spike: '+28%', base: '₹5,380', pct: 75, carrier: 'Air India' },
-    { corridor: 'CCU ✈️ DEL', peakFare: '₹7,250', spike: '+35%', base: '₹5,370', pct: 82, carrier: 'Akasa Air' },
-    { corridor: 'HYD ✈️ DEL', peakFare: '₹5,980', spike: '+18%', base: '₹5,060', pct: 60, carrier: 'Air India' },
-    { corridor: 'DEL ✈️ GOI', peakFare: '₹6,400', spike: '+22%', base: '₹5,240', pct: 66, carrier: 'IndiGo' },
-  ]
+  // Peak fare spikes across top corridors calculated from database
+  const corridorSpikes = useMemo(() => {
+    return getCorridorSpikes()
+  }, [])
 
   // Live Scraper Activity Feed Table Data
   const [liveFeeds] = useState([
@@ -243,22 +244,30 @@ export default function Dashboard({ onBackToLanding, onGoToRouteAnalytics }) {
     },
   ])
 
-  // Export CSV Functionality
+  // Export CSV Functionality with full 25 routes econometric breakdown
   const handleExportCSV = () => {
-    const csvHeader = 'Corridor,Carrier,Booking_Window,Extracted_Fare,Validation_Status,Index_Method\n'
-    const activeFeeds = liveFlightRecords && liveFlightRecords.length > 0 ? liveFlightRecords : liveFeeds
-    const csvRows = activeFeeds
-      .map(
-        (f) =>
-          `"${f.route}","${f.carrier}","${f.window}","${f.extractedFare}","${f.status}","${method.toUpperCase()}"`
-      )
-      .join('\n')
+    const routes = getAllRoutes('latest', method)
+    const nat = calculateNationalIndex('latest', method, horizonFilterKey)
 
-    const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' })
+    let csvContent = `MoSPI National Airfare Price Index (NAI) Official Report\n`
+    csvContent += `Generated At,${new Date().toISOString()}\n`
+    csvContent += `Calculation Method,${method.toUpperCase()} (${method === 'laspeyres' ? 'Passenger Volume Weighted' : 'Unweighted Geometric Mean'})\n`
+    csvContent += `Horizon Filter,${horizonFilterKey.toUpperCase()}\n`
+    csvContent += `National Airfare Index (NAI),${nat.indexValue}\n`
+    csvContent += `Inflation Rate vs Base (2026-09-01),${nat.baseChangePct}\n`
+    csvContent += `Total National Base Period Expenditure,₹${(nat.totalBaseExpenditure / 10000000).toFixed(2)} Crores\n`
+    csvContent += `Total Matched Flight Observations,${nat.matchedObservations}\n\n`
+
+    csvContent += `Route Code,Origin City,Destination City,Laspeyres Route Index,Jevons Route Index,Active Index,Route Weight (%),Base Period Expenditure (INR),Matched Flights\n`
+    routes.forEach((r) => {
+      csvContent += `"${r.id}","${r.originCity}","${r.destCity}",${r.laspeyresIndex},${r.jevonsIndex},${r.routeIndex},${r.weight},${r.totalBaseExp},${r.matchedFlightsCount}\n`
+    })
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', `National_Airfare_Index_Report_${new Date().toISOString().slice(0, 10)}.csv`)
+    link.setAttribute('download', `MoSPI_National_Airfare_Index_Report_${new Date().toISOString().slice(0, 10)}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -323,31 +332,44 @@ export default function Dashboard({ onBackToLanding, onGoToRouteAnalytics }) {
             <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono">
               <span className="px-2 text-slate-600 text-[11px] hidden sm:inline">Horizon:</span>
               {[
-                { id: '0-3d', label: '0–3D' },
-                { id: '7d', label: '7D' },
-                { id: '15d', label: '15D' },
-                { id: '30d', label: '30D' },
+                { id: 'all', label: 'All' },
+                { id: '0-3d', label: 'T+1' },
+                { id: '7d', label: 'T+7' },
+                { id: '15d', label: 'T+15' },
+                { id: '30d', label: 'T+30' },
+                { id: '45d', label: 'T+45' },
               ].map((tier) => (
                 <button
                   key={tier.id}
                   onClick={() => setBookingWindow(tier.id)}
-                  className={`px-2.5 py-1 rounded-md text-xs transition-all ${bookingWindow === tier.id
+                  className={`px-2 py-1 rounded-md text-xs transition-all cursor-pointer ${
+                    bookingWindow === tier.id
                       ? 'bg-[#0b2545] text-white font-bold shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                  }`}
                 >
                   {tier.label}
                 </button>
               ))}
             </div>
 
+            {/* MoSPI PDF Methodology Engine Modal Button */}
+            <button
+              onClick={() => onOpenMethodology && onOpenMethodology('BLR-BOM')}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold text-blue-950 bg-blue-100/90 hover:bg-blue-200 border border-blue-300 shadow-2xs active:scale-95 transition-all cursor-pointer"
+              title="Inspect the 4-step econometric calculations with BLR-BOM archetype"
+            >
+              <Calculator className="w-3.5 h-3.5 text-blue-700" />
+              <span>PDF Formulas</span>
+            </button>
+
             {/* Export CSV Action Button */}
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#0b2545] hover:bg-[#133560] border border-[#163863] shadow-sm active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#0b2545] hover:bg-[#133560] border border-[#163863] shadow-sm active:scale-95 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-amber-300" />
-              <span>Export Airfare Index Report (.CSV)</span>
+              <span>Export CPI Report (.CSV)</span>
             </button>
 
           </div>

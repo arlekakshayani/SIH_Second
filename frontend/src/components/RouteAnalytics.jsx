@@ -19,8 +19,14 @@ import {
   ArrowLeftRight,
   BarChart3,
   ChevronDown,
+  Calculator,
 } from 'lucide-react'
 import { getLatestIndex, getRoutes } from '../api'
+import {
+  calculateRouteIndex,
+  getAllRoutes,
+  getLeadTimeElasticityCurve
+} from '../services/airfareCalculationEngine'
 
 // Comprehensive Indian Airports with Coordinates for Haversine Route Distance
 const ALL_AIRPORTS = [
@@ -58,100 +64,37 @@ function getHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c)
 }
 
-export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
-  // Curated Routes (Delhi, Bombay, Bangalore corridors)
-  const routesList = [
-    {
-      id: 'DEL-BOM',
-      originCode: 'DEL',
-      originCity: 'Delhi (IGI T3)',
-      destCode: 'BOM',
-      destCity: 'Bombay (CSMIA T2)',
-      distance: '1,148 km',
-      duration: '2h 15m',
-      dailyFlights: 84,
-      avgPrice: '₹5,840',
-      routeIndex: 118.4,
-      variance: '+1.2%',
-      weight: '8.4%',
-      numericAvgFare: 5840,
-    },
-    {
-      id: 'BLR-BOM',
-      originCode: 'BLR',
-      originCity: 'Bangalore (KIA T1/T2)',
-      destCode: 'BOM',
-      destCity: 'Bombay (CSMIA T2)',
-      distance: '840 km',
-      duration: '1h 45m',
-      dailyFlights: 54,
-      avgPrice: '₹4,950',
-      routeIndex: 112.6,
-      variance: '-0.8%',
-      weight: '6.1%',
-      numericAvgFare: 4950,
-    },
-    {
-      id: 'BLR-DEL',
-      originCode: 'BLR',
-      originCity: 'Bangalore (KIA T1/T2)',
-      destCode: 'DEL',
-      destCity: 'Delhi (IGI T3)',
-      distance: '1,740 km',
-      duration: '2h 45m',
-      dailyFlights: 72,
-      avgPrice: '₹6,450',
-      routeIndex: 115.8,
-      variance: '+0.6%',
-      weight: '7.5%',
-      numericAvgFare: 6450,
-    },
-    {
-      id: 'BOM-DEL',
-      originCode: 'BOM',
-      originCity: 'Bombay (CSMIA T2)',
-      destCode: 'DEL',
-      destCity: 'Delhi (IGI T3)',
-      distance: '1,148 km',
-      duration: '2h 15m',
-      dailyFlights: 82,
-      avgPrice: '₹5,790',
-      routeIndex: 117.8,
-      variance: '+0.9%',
-      weight: '8.2%',
-      numericAvgFare: 5790,
-    },
-    {
-      id: 'DEL-BLR',
-      originCode: 'DEL',
-      originCity: 'Delhi (IGI T3)',
-      destCode: 'BLR',
-      destCity: 'Bangalore (KIA T1/T2)',
-      distance: '1,740 km',
-      duration: '2h 45m',
-      dailyFlights: 70,
-      avgPrice: '₹6,420',
-      routeIndex: 115.4,
-      variance: '+0.4%',
-      weight: '7.4%',
-      numericAvgFare: 6420,
-    },
-    {
-      id: 'BOM-BLR',
-      originCode: 'BOM',
-      originCity: 'Bombay (CSMIA T2)',
-      destCode: 'BLR',
-      destCity: 'Bangalore (KIA T1/T2)',
-      distance: '840 km',
-      duration: '1h 45m',
-      dailyFlights: 52,
-      avgPrice: '₹4,920',
-      routeIndex: 112.2,
-      variance: '-0.6%',
-      weight: '6.0%',
-      numericAvgFare: 4920,
-    },
-  ]
+export default function RouteAnalytics({ onBackToLanding, onGoToDashboard, onOpenMethodology }) {
+  // Dynamically load all 25 corridors from the calculated econometric dataset
+  const dynamicRoutes = useMemo(() => {
+    const list = getAllRoutes('latest', 'laspeyres')
+    return list.map((r) => {
+      const origAirport = ALL_AIRPORTS.find((a) => a.code === r.originCode) || { lat: 28.55, lon: 77.10 }
+      const destAirport = ALL_AIRPORTS.find((a) => a.code === r.destCode) || { lat: 19.08, lon: 72.86 }
+      const dist = getHaversineDistance(origAirport.lat, origAirport.lon, destAirport.lat, destAirport.lon) || 1000
+      const hrs = Math.floor(dist / 620)
+      const mins = Math.round(((dist % 620) / 620) * 60)
+      const dur = `${hrs > 0 ? hrs + 'h ' : ''}${mins > 0 ? mins : 40}m`
+
+      return {
+        id: r.id,
+        originCode: r.originCode,
+        originCity: r.originCity,
+        destCode: r.destCode,
+        destCity: r.destCity,
+        distance: `${dist.toLocaleString()} km`,
+        duration: dur,
+        dailyFlights: Math.max(16, Math.round(r.matchedFlightsCount * 6)),
+        avgPrice: r.avgPrice,
+        routeIndex: r.routeIndex,
+        variance: `${r.routeIndex >= 100 ? '+' : ''}${(r.routeIndex - 100).toFixed(1)}%`,
+        weight: r.weight,
+        numericAvgFare: r.numericAvgFare,
+      }
+    })
+  }, [])
+
+  const routesList = dynamicRoutes
 
   // Starting Point and Destination Point (selection inputs)
   const [originCode, setOriginCode] = useState('DEL')
@@ -303,6 +246,39 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
       return matchedCuratedRoute
     }
 
+    // Check if reverse route exists in dataset
+    const reverseCurated = routesList.find((r) => r.id === `${effectiveDestCode}-${effectiveOriginCode}`)
+    if (reverseCurated) {
+      return {
+        ...reverseCurated,
+        id: selectedRouteId,
+        originCode: effectiveOriginCode,
+        originCity: effectiveOriginAirport.city,
+        destCode: effectiveDestCode,
+        destCity: effectiveDestAirport.city,
+      }
+    }
+
+    // Fallback calculation using econometric engine lookup
+    const directCalc = calculateRouteIndex(selectedRouteId)
+    if (directCalc) {
+      return {
+        id: selectedRouteId,
+        originCode: effectiveOriginCode,
+        originCity: directCalc.origin_city,
+        destCode: effectiveDestCode,
+        destCity: directCalc.destination_city,
+        distance: '1,100 km',
+        duration: '2h 10m',
+        dailyFlights: Math.max(16, directCalc.total_matched_flights * 4),
+        avgPrice: `₹${Math.round(directCalc.horizons[0]?.base_avg_fare || 5000).toLocaleString('en-IN')}`,
+        routeIndex: directCalc.laspeyres_route_index,
+        variance: `${directCalc.laspeyres_route_index >= 100 ? '+' : ''}${(directCalc.laspeyres_route_index - 100).toFixed(1)}%`,
+        weight: `${directCalc.route_weight_pct}%`,
+        numericAvgFare: Math.round(directCalc.horizons[0]?.base_avg_fare || 5000),
+      }
+    }
+
     const distKm = getHaversineDistance(
       effectiveOriginAirport.lat,
       effectiveOriginAirport.lon,
@@ -315,28 +291,22 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
     const durStr = `${hrs > 0 ? hrs + 'h ' : ''}${mins > 0 ? mins : 40}m`
     const calculatedAvgFare = Math.round((2800 + distKm * 2.3) / 50) * 50
 
-    // Consistent pseudo-random index based on route characters
-    const charScore = (effectiveOriginCode + effectiveDestCode).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-    const dynamicIndex = 114.0 + (charScore % 130) / 10
-    const dynamicVar = ((charScore % 60) - 25) / 10
-    const weightVal = Math.max(2.1, Math.min(8.2, 9.5 - distKm / 350)).toFixed(1)
-
     return {
       id: selectedRouteId,
       originCode: effectiveOriginAirport.code,
-      originCity: `${effectiveOriginAirport.city} (${effectiveOriginAirport.airport.split('(')[1] ? effectiveOriginAirport.airport.split('(')[1].replace(')', '') : effectiveOriginAirport.code})`,
+      originCity: `${effectiveOriginAirport.city}`,
       destCode: effectiveDestAirport.code,
-      destCity: `${effectiveDestAirport.city} (${effectiveDestAirport.airport.split('(')[1] ? effectiveDestAirport.airport.split('(')[1].replace(')', '') : effectiveDestAirport.code})`,
+      destCity: `${effectiveDestAirport.city}`,
       distance: `${distKm.toLocaleString()} km`,
       duration: durStr,
       dailyFlights: Math.max(14, Math.round(80 - distKm / 40)),
       avgPrice: `₹${calculatedAvgFare.toLocaleString()}`,
-      routeIndex: Number(dynamicIndex.toFixed(1)),
-      variance: `${dynamicVar >= 0 ? '+' : ''}${dynamicVar.toFixed(1)}%`,
-      weight: `${weightVal}%`,
+      routeIndex: 105.5,
+      variance: '+5.5%',
+      weight: '3.5%',
       numericAvgFare: calculatedAvgFare,
     }
-  }, [selectedRouteId, effectiveOriginAirport, effectiveDestAirport, matchedCuratedRoute, effectiveOriginCode, effectiveDestCode])
+  }, [selectedRouteId, effectiveOriginAirport, effectiveDestAirport, matchedCuratedRoute, routesList, effectiveOriginCode, effectiveDestCode])
 
   const liveIndex = latestIndexes.find((record) => record.route === activeRoute.id)
   const displayedRouteIndex = liveIndex?.index_value ?? activeRoute.routeIndex
@@ -514,6 +484,14 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                     <span className="text-slate-500 text-[10px] block font-medium">Daily Trend</span>
                     <span className="text-emerald-700 font-bold text-sm">{activeRoute.variance}</span>
                   </div>
+                  <button
+                    onClick={() => onOpenMethodology && onOpenMethodology(activeRoute.id)}
+                    className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border border-blue-300 text-blue-950 font-bold text-xs font-sans transition-all active:scale-95 shadow-2xs cursor-pointer"
+                    title={`Inspect 4-step econometric calculation for ${activeRoute.id} as per the PDF specification`}
+                  >
+                    <Calculator className="w-3.5 h-3.5 text-blue-700" />
+                    <span>PDF Formulas for {activeRoute.id}</span>
+                  </button>
                 </div>
               </div>
             </div>
