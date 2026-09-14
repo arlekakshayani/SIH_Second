@@ -257,20 +257,27 @@ export default function HeroSection({ onNavigate, onOpenMethodology }) {
   const svgHeight = 175
   const padX = 35
   const padY = 20
-  const hourlyMin = 142
-  const hourlyMax = 150
+  // Dynamic Y-axis bounds derived from actual data (real index ~100-110, not 142-150)
+  const hourlyValues = hourlyData.length > 0 ? hourlyData.map((d) => d.index) : [100]
+  const hourlyMin = Math.max(0, Math.floor(Math.min(...hourlyValues) - 2))
+  const hourlyMax = Math.ceil(Math.max(...hourlyValues) + 2)
 
-  const getHourlyY = (val) => svgHeight - padY - ((val - hourlyMin) / (hourlyMax - hourlyMin)) * (svgHeight - padY * 2)
-  const getHourlyX = (idx) => padX + (idx / (hourlyData.length - 1)) * (svgWidth - padX * 2)
+  const getHourlyY = (val) => svgHeight - padY - ((val - hourlyMin) / Math.max(hourlyMax - hourlyMin, 1)) * (svgHeight - padY * 2)
+  const getHourlyX = (idx) => padX + (idx / Math.max(hourlyData.length - 1, 1)) * (svgWidth - padX * 2)
   const hourlyPointsStr = hourlyData.map((d, i) => `${getHourlyX(i)},${getHourlyY(d.index)}`).join(' ')
-  const hourlyAreaPoints = `${getHourlyX(0)},${getHourlyY(hourlyData[0].index)} ${hourlyPointsStr} ${getHourlyX(hourlyData.length - 1)},${svgHeight - padY} ${getHourlyX(0)},${svgHeight - padY}`
+  const hourlyAreaPoints = hourlyData.length > 0
+    ? `${getHourlyX(0)},${getHourlyY(hourlyData[0].index)} ${hourlyPointsStr} ${getHourlyX(hourlyData.length - 1)},${svgHeight - padY} ${getHourlyX(0)},${svgHeight - padY}`
+    : ''
 
-  const dailyMin = 142
-  const dailyMax = 150
-  const getDailyY = (val) => svgHeight - padY - ((val - dailyMin) / (dailyMax - dailyMin)) * (svgHeight - padY * 2)
-  const getDailyX = (idx) => padX + (idx / (dailyIndexData.length - 1)) * (svgWidth - padX * 2)
+  const dailyValues = dailyIndexData.length > 0 ? dailyIndexData.map((d) => d.avgIndex) : [100]
+  const dailyMin = Math.max(0, Math.floor(Math.min(...dailyValues) - 2))
+  const dailyMax = Math.ceil(Math.max(...dailyValues) + 3)
+  const getDailyY = (val) => svgHeight - padY - ((val - dailyMin) / Math.max(dailyMax - dailyMin, 1)) * (svgHeight - padY * 2)
+  const getDailyX = (idx) => padX + (idx / Math.max(dailyIndexData.length - 1, 1)) * (svgWidth - padX * 2)
   const dailyPointsStr = dailyIndexData.map((d, i) => `${getDailyX(i)},${getDailyY(d.avgIndex)}`).join(' ')
-  const dailyAreaPoints = `${getDailyX(0)},${getDailyY(dailyIndexData[0].avgIndex)} ${dailyPointsStr} ${getDailyX(dailyIndexData.length - 1)},${svgHeight - padY} ${getDailyX(0)},${svgHeight - padY}`
+  const dailyAreaPoints = dailyIndexData.length > 0
+    ? `${getDailyX(0)},${getDailyY(dailyIndexData[0].avgIndex)} ${dailyPointsStr} ${getDailyX(dailyIndexData.length - 1)},${svgHeight - padY} ${getDailyX(0)},${svgHeight - padY}`
+    : ''
 
   return (
     <div className="w-full bg-[#f4f6f9] text-slate-800">
@@ -500,18 +507,25 @@ export default function HeroSection({ onNavigate, onOpenMethodology }) {
                         </linearGradient>
                       </defs>
 
-                      {/* Horizontal Grid lines */}
-                      {[144, 147, 150].map((val) => {
-                        const y = getHourlyY(val)
-                        return (
-                          <g key={val}>
-                            <line x1={padX} y1={y} x2={svgWidth - padX} y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                            <text x={padX - 8} y={y + 3} fill="#94a3b8" fontSize="9" fontFamily="monospace" textAnchor="end">
-                              {val}
-                            </text>
-                          </g>
-                        )
-                      })}
+                      {/* Horizontal Grid lines - dynamic based on current tab's range */}
+                      {(() => {
+                        const isHourly = activeGraphTab === 'hourly'
+                        const gMin = isHourly ? hourlyMin : dailyMin
+                        const gMax = isHourly ? hourlyMax : dailyMax
+                        const getY = isHourly ? getHourlyY : getDailyY
+                        const step = (gMax - gMin) / 3
+                        return [gMin + step, gMin + step * 2, gMax].map((val) => {
+                          const y = getY(val)
+                          return (
+                            <g key={val}>
+                              <line x1={padX} y1={y} x2={svgWidth - padX} y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                              <text x={padX - 8} y={y + 3} fill="#94a3b8" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                {val.toFixed(1)}
+                              </text>
+                            </g>
+                          )
+                        })
+                      })()}
 
                       {/* Area Fill */}
                       <polygon points={activeGraphTab === 'hourly' ? hourlyAreaPoints : dailyAreaPoints} fill="url(#searchChartGradient)" />

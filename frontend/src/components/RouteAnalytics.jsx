@@ -950,90 +950,77 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard, onOpe
                           </linearGradient>
                         </defs>
 
-                        {/* Horizontal Grid lines */}
-                        {[114, 118, 122].map((v) => {
-                          const y = 180 - 25 - ((v - 112) / 12) * 130
+                        {/* Dynamic Y-axis - compute bounds from actual route index values */}
+                        {(() => {
+                          const deltas = [-1.2, -1.5, -1.7, -0.8, 0.4, 0.8, 0.5, 0.1, 0.3, 1.1, 0.6, 0]
+                          const vals = deltas.map((d) => displayedRouteIndex + d)
+                          const rMin = Math.max(0, Math.floor(Math.min(...vals) - 1))
+                          const rMax = Math.ceil(Math.max(...vals) + 1)
+                          const rRange = Math.max(rMax - rMin, 1)
+                          const hy = (v) => 155 - ((v - rMin) / rRange) * 130
+                          const xCoords = [40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 460]
+                          const points6 = [
+                            { h: '00:00', x: 40, val: displayedRouteIndex - 1.2 },
+                            { h: '04:00', x: 120, val: displayedRouteIndex - 1.7 },
+                            { h: '08:00', x: 200, val: displayedRouteIndex + 0.4 },
+                            { h: '12:00', x: 280, val: displayedRouteIndex + 0.5 },
+                            { h: '16:00', x: 360, val: displayedRouteIndex + 0.3 },
+                            { h: '20:00', x: 440, val: displayedRouteIndex + 0.6 },
+                          ]
+                          const polyPts = deltas.map((d, i) => `${xCoords[i]},${hy(displayedRouteIndex + d)}`).join(' ')
+                          const ticks = [rMin + (rRange / 3), rMin + (rRange * 2 / 3), rMax]
                           return (
-                            <g key={v}>
-                              <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                              <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
-                                {v}
-                              </text>
-                            </g>
-                          )
-                        })}
-
-                        {/* Area & Polyline */}
-                        <polygon
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        80,${180 - 25 - (((displayedRouteIndex - 1.5) - 112) / 12) * 130} 
-                        120,${180 - 25 - (((displayedRouteIndex - 1.7) - 112) / 12) * 130} 
-                        160,${180 - 25 - (((displayedRouteIndex - 0.8) - 112) / 12) * 130} 
-                        200,${180 - 25 - (((displayedRouteIndex + 0.4) - 112) / 12) * 130} 
-                        240,${180 - 25 - (((displayedRouteIndex + 0.8) - 112) / 12) * 130} 
-                        280,${180 - 25 - (((displayedRouteIndex + 0.5) - 112) / 12) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex + 0.1) - 112) / 12) * 130} 
-                        360,${180 - 25 - (((displayedRouteIndex + 0.3) - 112) / 12) * 130} 
-                        400,${180 - 25 - (((displayedRouteIndex + 1.1) - 112) / 12) * 130} 
-                        440,${180 - 25 - (((displayedRouteIndex + 0.6) - 112) / 12) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 112) / 12) * 130} 
-                        460,155 40,155`}
-                          fill="url(#routeHourlyGrad)"
-                        />
-
-                        <polyline
-                          fill="none"
-                          stroke="#0b2545"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        80,${180 - 25 - (((displayedRouteIndex - 1.5) - 112) / 12) * 130} 
-                        120,${180 - 25 - (((displayedRouteIndex - 1.7) - 112) / 12) * 130} 
-                        160,${180 - 25 - (((displayedRouteIndex - 0.8) - 112) / 12) * 130} 
-                        200,${180 - 25 - (((displayedRouteIndex + 0.4) - 112) / 12) * 130} 
-                        240,${180 - 25 - (((displayedRouteIndex + 0.8) - 112) / 12) * 130} 
-                        280,${180 - 25 - (((displayedRouteIndex + 0.5) - 112) / 12) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex + 0.1) - 112) / 12) * 130} 
-                        360,${180 - 25 - (((displayedRouteIndex + 0.3) - 112) / 12) * 130} 
-                        400,${180 - 25 - (((displayedRouteIndex + 1.1) - 112) / 12) * 130} 
-                        440,${180 - 25 - (((displayedRouteIndex + 0.6) - 112) / 12) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 112) / 12) * 130}`}
-                        />
-
-                        {/* Hourly Data Points */}
-                        {[
-                          { h: '00:00', x: 40, val: (displayedRouteIndex - 1.2).toFixed(1) },
-                          { h: '04:00', x: 120, val: (displayedRouteIndex - 1.7).toFixed(1) },
-                          { h: '08:00', x: 200, val: (displayedRouteIndex + 0.4).toFixed(1) },
-                          { h: '12:00', x: 280, val: (displayedRouteIndex + 0.5).toFixed(1) },
-                          { h: '16:00', x: 360, val: (displayedRouteIndex + 0.3).toFixed(1) },
-                          { h: '20:00', x: 440, val: (displayedRouteIndex + 0.6).toFixed(1) },
-                        ].map((pt, idx) => {
-                          const y = 180 - 25 - ((Number(pt.val) - 112) / 12) * 130
-                          const isHovered = hoveredHourlyPoint === idx
-                          return (
-                            <g
-                              key={pt.h}
-                              className="cursor-pointer"
-                              onMouseEnter={() => setHoveredHourlyPoint(idx)}
-                              onMouseLeave={() => setHoveredHourlyPoint(null)}
-                            >
-                              <circle
-                                cx={pt.x}
-                                cy={y}
-                                r={isHovered ? 6 : 4}
-                                fill={isHovered ? '#0b2545' : '#1e3a8a'}
-                                stroke="#ffffff"
-                                strokeWidth="2"
+                            <>
+                              {ticks.map((v) => {
+                                const y = hy(v)
+                                return (
+                                  <g key={v}>
+                                    <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                                    <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                      {v.toFixed(1)}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                              <polygon
+                                points={`${polyPts} 460,155 40,155`}
+                                fill="url(#routeHourlyGrad)"
                               />
-                              <text x={pt.x} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                                {pt.h}
-                              </text>
-                            </g>
+                              <polyline
+                                fill="none"
+                                stroke="#0b2545"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                points={polyPts}
+                              />
+                              {points6.map((pt, idx) => {
+                                const y = hy(pt.val)
+                                const isHovered = hoveredHourlyPoint === idx
+                                return (
+                                  <g
+                                    key={pt.h}
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => setHoveredHourlyPoint(idx)}
+                                    onMouseLeave={() => setHoveredHourlyPoint(null)}
+                                  >
+                                    <circle
+                                      cx={pt.x}
+                                      cy={y}
+                                      r={isHovered ? 6 : 4}
+                                      fill={isHovered ? '#0b2545' : '#1e3a8a'}
+                                      stroke="#ffffff"
+                                      strokeWidth="2"
+                                    />
+                                    <text x={pt.x} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
+                                      {pt.h}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                            </>
                           )
-                        })}
+                        })()}
                       </svg>
 
                       {/* Hourly Tooltip */}
@@ -1076,81 +1063,71 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard, onOpe
                           </linearGradient>
                         </defs>
 
-                        {/* Horizontal Grid lines */}
-                        {[110, 115, 120].map((v) => {
-                          const y = 180 - 25 - ((v - 108) / 14) * 130
+                        {/* Dynamic Y-axis - compute bounds from actual daily route index values */}
+                        {(() => {
+                          const dailyDeltas = [-2.8, -2.1, -1.4, -1.6, -0.8, -0.3, 0]
+                          const dailyXs = [40, 110, 180, 250, 320, 390, 460]
+                          const dailyDates = ['29 Aug', '30 Aug', '31 Aug', '01 Sep', '02 Sep', '03 Sep', '04 Sep']
+                          const vals = dailyDeltas.map((d) => displayedRouteIndex + d)
+                          const rMin = Math.max(0, Math.floor(Math.min(...vals) - 1))
+                          const rMax = Math.ceil(Math.max(...vals) + 1)
+                          const rRange = Math.max(rMax - rMin, 1)
+                          const dy = (v) => 155 - ((v - rMin) / rRange) * 130
+                          const polyPts = dailyDeltas.map((d, i) => `${dailyXs[i]},${dy(displayedRouteIndex + d)}`).join(' ')
+                          const ticks = [rMin + (rRange / 3), rMin + (rRange * 2 / 3), rMax]
                           return (
-                            <g key={v}>
-                              <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                              <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
-                                {v}
-                              </text>
-                            </g>
-                          )
-                        })}
-
-                        {/* Area & Polyline */}
-                        <polygon
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 2.8) - 108) / 14) * 130} 
-                        40,${180 - 25 - (((displayedRouteIndex - 2.8) - 108) / 14) * 130} 
-                        110,${180 - 25 - (((displayedRouteIndex - 2.1) - 108) / 14) * 130} 
-                        180,${180 - 25 - (((displayedRouteIndex - 1.4) - 108) / 14) * 130} 
-                        250,${180 - 25 - (((displayedRouteIndex - 1.6) - 108) / 14) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex - 0.8) - 108) / 14) * 130} 
-                        390,${180 - 25 - (((displayedRouteIndex - 0.3) - 108) / 14) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 108) / 14) * 130} 
-                        460,155 40,155`}
-                          fill="url(#routeDailyGrad)"
-                        />
-
-                        <polyline
-                          fill="none"
-                          stroke="#15803d"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 2.8) - 108) / 14) * 130} 
-                        110,${180 - 25 - (((displayedRouteIndex - 2.1) - 108) / 14) * 130} 
-                        180,${180 - 25 - (((displayedRouteIndex - 1.4) - 108) / 14) * 130} 
-                        250,${180 - 25 - (((displayedRouteIndex - 1.6) - 108) / 14) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex - 0.8) - 108) / 14) * 130} 
-                        390,${180 - 25 - (((displayedRouteIndex - 0.3) - 108) / 14) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 108) / 14) * 130}`}
-                        />
-
-                        {/* Daily Data Points (Explicitly representing the average of scraped hours) */}
-                        {[
-                          { d: '29 Aug', x: 40, val: (displayedRouteIndex - 2.8).toFixed(1) },
-                          { d: '30 Aug', x: 110, val: (displayedRouteIndex - 2.1).toFixed(1) },
-                          { d: '31 Aug', x: 180, val: (displayedRouteIndex - 1.4).toFixed(1) },
-                          { d: '01 Sep', x: 250, val: (displayedRouteIndex - 1.6).toFixed(1) },
-                          { d: '02 Sep', x: 320, val: (displayedRouteIndex - 0.8).toFixed(1) },
-                          { d: '03 Sep', x: 390, val: (displayedRouteIndex - 0.3).toFixed(1) },
-                          { d: '04 Sep', x: 460, val: displayedRouteIndex.toFixed(1) },
-                        ].map((pt, idx) => {
-                          const y = 180 - 25 - ((Number(pt.val) - 108) / 14) * 130
-                          const isHovered = hoveredDailyPoint === idx
-                          return (
-                            <g
-                              key={pt.d}
-                              className="cursor-pointer"
-                              onMouseEnter={() => setHoveredDailyPoint(idx)}
-                              onMouseLeave={() => setHoveredDailyPoint(null)}
-                            >
-                              <circle
-                                cx={pt.x}
-                                cy={y}
-                                r={isHovered ? 6 : 4}
-                                fill={isHovered ? '#15803d' : '#16a34a'}
-                                stroke="#ffffff"
-                                strokeWidth="2"
+                            <>
+                              {ticks.map((v) => {
+                                const y = dy(v)
+                                return (
+                                  <g key={v}>
+                                    <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                                    <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                      {v.toFixed(1)}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                              <polygon
+                                points={`${polyPts} 460,155 40,155`}
+                                fill="url(#routeDailyGrad)"
                               />
-                              <text x={pt.x} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                                {pt.d}
-                              </text>
-                            </g>
+                              <polyline
+                                fill="none"
+                                stroke="#15803d"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                points={polyPts}
+                              />
+                              {dailyDeltas.map((delta, idx) => {
+                                const val = displayedRouteIndex + delta
+                                const y = dy(val)
+                                const isHovered = hoveredDailyPoint === idx
+                                return (
+                                  <g
+                                    key={dailyDates[idx]}
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => setHoveredDailyPoint(idx)}
+                                    onMouseLeave={() => setHoveredDailyPoint(null)}
+                                  >
+                                    <circle
+                                      cx={dailyXs[idx]}
+                                      cy={y}
+                                      r={isHovered ? 6 : 4}
+                                      fill={isHovered ? '#15803d' : '#16a34a'}
+                                      stroke="#ffffff"
+                                      strokeWidth="2"
+                                    />
+                                    <text x={dailyXs[idx]} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
+                                      {dailyDates[idx]}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                            </>
                           )
-                        })}
+                        })()}
                       </svg>
 
                       {/* Daily Tooltip */}

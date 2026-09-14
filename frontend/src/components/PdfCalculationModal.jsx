@@ -14,7 +14,8 @@ import {
   Info,
   ShieldCheck,
   Plane,
-  Sparkles
+  Sparkles,
+  Printer
 } from 'lucide-react'
 import {
   calculateRouteIndex,
@@ -78,10 +79,20 @@ export default function PdfCalculationModal({ isOpen, onClose, initialRoute = 'B
               <ChevronDown className="w-4 h-4 text-amber-300 absolute right-2.5 top-2.5 pointer-events-none" />
             </div>
 
+            {/* Print / Save PDF Button */}
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+              title="Print or Save formulas and calculations as PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print / Save PDF</span>
+            </button>
+
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />

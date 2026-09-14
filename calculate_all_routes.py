@@ -19,6 +19,9 @@ def generate_econometric_dataset():
     out_dir = os.path.join(base_dir, "src", "data")
     os.makedirs(out_dir, exist_ok=True)
     out_json_path = os.path.join(out_dir, "calculatedEconometricData.json")
+    frontend_out_dir = os.path.join(base_dir, "frontend", "src", "data")
+    os.makedirs(frontend_out_dir, exist_ok=True)
+    frontend_out_json_path = os.path.join(frontend_out_dir, "calculatedEconometricData.json")
 
     conn = sqlite3.connect(db_path)
     df = pd.read_sql_query("SELECT * FROM airfare_observations WHERE availability != 'Sold Out'", conn)
@@ -302,6 +305,9 @@ def generate_econometric_dataset():
     }
 
     with open(out_json_path, 'w', encoding='utf-8') as f:
+        json.dump(full_output, f, indent=2)
+
+    with open(frontend_out_json_path, 'w', encoding='utf-8') as f:
         json.dump(full_output, f, indent=2)
 
     print(f"Successfully generated econometric dataset at: {out_json_path}")
