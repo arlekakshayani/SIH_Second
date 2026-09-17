@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import FlightLoader from './components/FlightLoader'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import LivePipelineHealth from './components/LivePipelineHealth'
@@ -8,6 +9,7 @@ import RouteAnalytics from './components/RouteAnalytics'
 import Footer from './components/Footer'
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true)
   // 'overview' | 'pipeline-health' | 'corridors' | 'radar' | 'dashboard'
   const [currentView, setCurrentView] = useState('overview')
 
@@ -32,6 +34,7 @@ export default function App() {
     }
 
     window.addEventListener('hashchange', handleHashChange)
+    window.replayIntro = () => setIsLoading(true)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
@@ -44,6 +47,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f4f6f9] text-slate-800 flex flex-col font-sans selection:bg-amber-500 selection:text-white">
+      {/* Flight Loading Screen & NAI Logo Zoom/Transition */}
+      {isLoading && <FlightLoader onDone={() => setIsLoading(false)} />}
       
       {/* Top Navigation Bar */}
       <Navbar
@@ -80,7 +85,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Official Project & MoSPI Footer */}
+      {/* Official Project Footer */}
       <Footer onNavigate={handleNavigate} />
 
     </div>

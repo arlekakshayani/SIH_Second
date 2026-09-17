@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           
-          {/* Left: Official Emblem & Ministry Branding */}
+          {/* Left: Official Emblem & NAI Branding */}
           <div className="flex items-center gap-3.5 text-center sm:text-left">
             <img
               src={logoMark}
@@ -19,16 +19,16 @@ export default function Footer() {
                 National Airfare Index (NAI)
               </span>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Ministry of Statistics &amp; Programme Implementation (MoSPI), Government of India
+                Real-Time Civil Aviation Tariff Surveillance &amp; Inflation Tracking System
               </p>
             </div>
           </div>
 
           {/* Right: Clean Copyright & Official Notice */}
           <div className="text-center sm:text-right text-xs font-mono text-slate-500 space-y-0.5">
-            <p className="font-semibold text-slate-700">© 2026 Government of India</p>
+            <p className="font-semibold text-slate-700">© 2026 National Airfare Index (NAI)</p>
             <p className="text-[11px] text-slate-400">
-              Official Civil Aviation Airfare Price Index &amp; Tariff Surveillance System
+              Domestic Civil Aviation Airfare Index
             </p>
           </div>
 
