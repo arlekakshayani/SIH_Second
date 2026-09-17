@@ -19,8 +19,14 @@ import {
   ArrowLeftRight,
   BarChart3,
   ChevronDown,
+  Calculator,
 } from 'lucide-react'
 import { getLatestIndex, getRoutes } from '../api'
+import {
+  calculateRouteIndex,
+  getAllRoutes,
+  getLeadTimeElasticityCurve
+} from '../services/airfareCalculationEngine'
 
 // Comprehensive Indian Airports with Coordinates for Haversine Route Distance
 const ALL_AIRPORTS = [
@@ -58,100 +64,37 @@ function getHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c)
 }
 
-export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
-  // Curated Routes (Delhi, Bombay, Bangalore corridors)
-  const routesList = [
-    {
-      id: 'DEL-BOM',
-      originCode: 'DEL',
-      originCity: 'Delhi (IGI T3)',
-      destCode: 'BOM',
-      destCity: 'Bombay (CSMIA T2)',
-      distance: '1,148 km',
-      duration: '2h 15m',
-      dailyFlights: 84,
-      avgPrice: '₹5,840',
-      routeIndex: 118.4,
-      variance: '+1.2%',
-      weight: '8.4%',
-      numericAvgFare: 5840,
-    },
-    {
-      id: 'BLR-BOM',
-      originCode: 'BLR',
-      originCity: 'Bangalore (KIA T1/T2)',
-      destCode: 'BOM',
-      destCity: 'Bombay (CSMIA T2)',
-      distance: '840 km',
-      duration: '1h 45m',
-      dailyFlights: 54,
-      avgPrice: '₹4,950',
-      routeIndex: 112.6,
-      variance: '-0.8%',
-      weight: '6.1%',
-      numericAvgFare: 4950,
-    },
-    {
-      id: 'BLR-DEL',
-      originCode: 'BLR',
-      originCity: 'Bangalore (KIA T1/T2)',
-      destCode: 'DEL',
-      destCity: 'Delhi (IGI T3)',
-      distance: '1,740 km',
-      duration: '2h 45m',
-      dailyFlights: 72,
-      avgPrice: '₹6,450',
-      routeIndex: 115.8,
-      variance: '+0.6%',
-      weight: '7.5%',
-      numericAvgFare: 6450,
-    },
-    {
-      id: 'BOM-DEL',
-      originCode: 'BOM',
-      originCity: 'Bombay (CSMIA T2)',
-      destCode: 'DEL',
-      destCity: 'Delhi (IGI T3)',
-      distance: '1,148 km',
-      duration: '2h 15m',
-      dailyFlights: 82,
-      avgPrice: '₹5,790',
-      routeIndex: 117.8,
-      variance: '+0.9%',
-      weight: '8.2%',
-      numericAvgFare: 5790,
-    },
-    {
-      id: 'DEL-BLR',
-      originCode: 'DEL',
-      originCity: 'Delhi (IGI T3)',
-      destCode: 'BLR',
-      destCity: 'Bangalore (KIA T1/T2)',
-      distance: '1,740 km',
-      duration: '2h 45m',
-      dailyFlights: 70,
-      avgPrice: '₹6,420',
-      routeIndex: 115.4,
-      variance: '+0.4%',
-      weight: '7.4%',
-      numericAvgFare: 6420,
-    },
-    {
-      id: 'BOM-BLR',
-      originCode: 'BOM',
-      originCity: 'Bombay (CSMIA T2)',
-      destCode: 'BLR',
-      destCity: 'Bangalore (KIA T1/T2)',
-      distance: '840 km',
-      duration: '1h 45m',
-      dailyFlights: 52,
-      avgPrice: '₹4,920',
-      routeIndex: 112.2,
-      variance: '-0.6%',
-      weight: '6.0%',
-      numericAvgFare: 4920,
-    },
-  ]
+export default function RouteAnalytics({ onBackToLanding, onGoToDashboard, onOpenMethodology }) {
+  // Dynamically load all 25 corridors from the calculated econometric dataset
+  const dynamicRoutes = useMemo(() => {
+    const list = getAllRoutes('latest', 'laspeyres')
+    return list.map((r) => {
+      const origAirport = ALL_AIRPORTS.find((a) => a.code === r.originCode) || { lat: 28.55, lon: 77.10 }
+      const destAirport = ALL_AIRPORTS.find((a) => a.code === r.destCode) || { lat: 19.08, lon: 72.86 }
+      const dist = getHaversineDistance(origAirport.lat, origAirport.lon, destAirport.lat, destAirport.lon) || 1000
+      const hrs = Math.floor(dist / 620)
+      const mins = Math.round(((dist % 620) / 620) * 60)
+      const dur = `${hrs > 0 ? hrs + 'h ' : ''}${mins > 0 ? mins : 40}m`
+
+      return {
+        id: r.id,
+        originCode: r.originCode,
+        originCity: r.originCity,
+        destCode: r.destCode,
+        destCity: r.destCity,
+        distance: `${dist.toLocaleString()} km`,
+        duration: dur,
+        dailyFlights: Math.max(16, Math.round(r.matchedFlightsCount * 6)),
+        avgPrice: r.avgPrice,
+        routeIndex: r.routeIndex,
+        variance: `${r.routeIndex >= 100 ? '+' : ''}${(r.routeIndex - 100).toFixed(1)}%`,
+        weight: r.weight,
+        numericAvgFare: r.numericAvgFare,
+      }
+    })
+  }, [])
+
+  const routesList = dynamicRoutes
 
   // Starting Point and Destination Point (selection inputs)
   const [originCode, setOriginCode] = useState('DEL')
@@ -318,6 +261,39 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
       return matchedCuratedRoute
     }
 
+    // Check if reverse route exists in dataset
+    const reverseCurated = routesList.find((r) => r.id === `${effectiveDestCode}-${effectiveOriginCode}`)
+    if (reverseCurated) {
+      return {
+        ...reverseCurated,
+        id: selectedRouteId,
+        originCode: effectiveOriginCode,
+        originCity: effectiveOriginAirport.city,
+        destCode: effectiveDestCode,
+        destCity: effectiveDestAirport.city,
+      }
+    }
+
+    // Fallback calculation using econometric engine lookup
+    const directCalc = calculateRouteIndex(selectedRouteId)
+    if (directCalc) {
+      return {
+        id: selectedRouteId,
+        originCode: effectiveOriginCode,
+        originCity: directCalc.origin_city,
+        destCode: effectiveDestCode,
+        destCity: directCalc.destination_city,
+        distance: '1,100 km',
+        duration: '2h 10m',
+        dailyFlights: Math.max(16, directCalc.total_matched_flights * 4),
+        avgPrice: `₹${Math.round(directCalc.horizons[0]?.base_avg_fare || 5000).toLocaleString('en-IN')}`,
+        routeIndex: directCalc.laspeyres_route_index,
+        variance: `${directCalc.laspeyres_route_index >= 100 ? '+' : ''}${(directCalc.laspeyres_route_index - 100).toFixed(1)}%`,
+        weight: `${directCalc.route_weight_pct}%`,
+        numericAvgFare: Math.round(directCalc.horizons[0]?.base_avg_fare || 5000),
+      }
+    }
+
     const distKm = getHaversineDistance(
       effectiveOriginAirport.lat,
       effectiveOriginAirport.lon,
@@ -330,28 +306,22 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
     const durStr = `${hrs > 0 ? hrs + 'h ' : ''}${mins > 0 ? mins : 40}m`
     const calculatedAvgFare = Math.round((2800 + distKm * 2.3) / 50) * 50
 
-    // Consistent pseudo-random index based on route characters
-    const charScore = (effectiveOriginCode + effectiveDestCode).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-    const dynamicIndex = 114.0 + (charScore % 130) / 10
-    const dynamicVar = ((charScore % 60) - 25) / 10
-    const weightVal = Math.max(2.1, Math.min(8.2, 9.5 - distKm / 350)).toFixed(1)
-
     return {
       id: selectedRouteId,
       originCode: effectiveOriginAirport.code,
-      originCity: `${effectiveOriginAirport.city} (${effectiveOriginAirport.airport.split('(')[1] ? effectiveOriginAirport.airport.split('(')[1].replace(')', '') : effectiveOriginAirport.code})`,
+      originCity: `${effectiveOriginAirport.city}`,
       destCode: effectiveDestAirport.code,
-      destCity: `${effectiveDestAirport.city} (${effectiveDestAirport.airport.split('(')[1] ? effectiveDestAirport.airport.split('(')[1].replace(')', '') : effectiveDestAirport.code})`,
+      destCity: `${effectiveDestAirport.city}`,
       distance: `${distKm.toLocaleString()} km`,
       duration: durStr,
       dailyFlights: Math.max(14, Math.round(80 - distKm / 40)),
       avgPrice: `₹${calculatedAvgFare.toLocaleString()}`,
-      routeIndex: Number(dynamicIndex.toFixed(1)),
-      variance: `${dynamicVar >= 0 ? '+' : ''}${dynamicVar.toFixed(1)}%`,
-      weight: `${weightVal}%`,
+      routeIndex: 105.5,
+      variance: '+5.5%',
+      weight: '3.5%',
       numericAvgFare: calculatedAvgFare,
     }
-  }, [selectedRouteId, effectiveOriginAirport, effectiveDestAirport, matchedCuratedRoute, effectiveOriginCode, effectiveDestCode])
+  }, [selectedRouteId, effectiveOriginAirport, effectiveDestAirport, matchedCuratedRoute, routesList, effectiveOriginCode, effectiveDestCode])
 
   const liveIndex = latestIndexes.find((record) => record.route === activeRoute.id)
   const displayedRouteIndex = liveIndex?.index_value ?? activeRoute.routeIndex
@@ -588,6 +558,14 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                     <span className="text-slate-500 text-[10px] block font-medium">Daily Trend</span>
                     <span className="text-emerald-700 font-bold text-sm">{activeRoute.variance}</span>
                   </div>
+                  <button
+                    onClick={() => onOpenMethodology && onOpenMethodology(activeRoute.id)}
+                    className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 border border-blue-300 text-blue-950 font-bold text-xs font-sans transition-all active:scale-95 shadow-2xs cursor-pointer"
+                    title={`Inspect 4-step econometric calculation for ${activeRoute.id} as per the PDF specification`}
+                  >
+                    <Calculator className="w-3.5 h-3.5 text-blue-700" />
+                    <span>PDF Formulas for {activeRoute.id}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1058,90 +1036,77 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                           </linearGradient>
                         </defs>
 
-                        {/* Horizontal Grid lines */}
-                        {[114, 118, 122].map((v) => {
-                          const y = 180 - 25 - ((v - 112) / 12) * 130
+                        {/* Dynamic Y-axis - compute bounds from actual route index values */}
+                        {(() => {
+                          const deltas = [-1.2, -1.5, -1.7, -0.8, 0.4, 0.8, 0.5, 0.1, 0.3, 1.1, 0.6, 0]
+                          const vals = deltas.map((d) => displayedRouteIndex + d)
+                          const rMin = Math.max(0, Math.floor(Math.min(...vals) - 1))
+                          const rMax = Math.ceil(Math.max(...vals) + 1)
+                          const rRange = Math.max(rMax - rMin, 1)
+                          const hy = (v) => 155 - ((v - rMin) / rRange) * 130
+                          const xCoords = [40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 460]
+                          const points6 = [
+                            { h: '00:00', x: 40, val: displayedRouteIndex - 1.2 },
+                            { h: '04:00', x: 120, val: displayedRouteIndex - 1.7 },
+                            { h: '08:00', x: 200, val: displayedRouteIndex + 0.4 },
+                            { h: '12:00', x: 280, val: displayedRouteIndex + 0.5 },
+                            { h: '16:00', x: 360, val: displayedRouteIndex + 0.3 },
+                            { h: '20:00', x: 440, val: displayedRouteIndex + 0.6 },
+                          ]
+                          const polyPts = deltas.map((d, i) => `${xCoords[i]},${hy(displayedRouteIndex + d)}`).join(' ')
+                          const ticks = [rMin + (rRange / 3), rMin + (rRange * 2 / 3), rMax]
                           return (
-                            <g key={v}>
-                              <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                              <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
-                                {v}
-                              </text>
-                            </g>
-                          )
-                        })}
-
-                        {/* Area & Polyline */}
-                        <polygon
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        80,${180 - 25 - (((displayedRouteIndex - 1.5) - 112) / 12) * 130} 
-                        120,${180 - 25 - (((displayedRouteIndex - 1.7) - 112) / 12) * 130} 
-                        160,${180 - 25 - (((displayedRouteIndex - 0.8) - 112) / 12) * 130} 
-                        200,${180 - 25 - (((displayedRouteIndex + 0.4) - 112) / 12) * 130} 
-                        240,${180 - 25 - (((displayedRouteIndex + 0.8) - 112) / 12) * 130} 
-                        280,${180 - 25 - (((displayedRouteIndex + 0.5) - 112) / 12) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex + 0.1) - 112) / 12) * 130} 
-                        360,${180 - 25 - (((displayedRouteIndex + 0.3) - 112) / 12) * 130} 
-                        400,${180 - 25 - (((displayedRouteIndex + 1.1) - 112) / 12) * 130} 
-                        440,${180 - 25 - (((displayedRouteIndex + 0.6) - 112) / 12) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 112) / 12) * 130} 
-                        460,155 40,155`}
-                          fill="url(#routeHourlyGrad)"
-                        />
-
-                        <polyline
-                          fill="none"
-                          stroke="#0b2545"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          points={`40,${180 - 25 - (((displayedRouteIndex - 1.2) - 112) / 12) * 130} 
-                        80,${180 - 25 - (((displayedRouteIndex - 1.5) - 112) / 12) * 130} 
-                        120,${180 - 25 - (((displayedRouteIndex - 1.7) - 112) / 12) * 130} 
-                        160,${180 - 25 - (((displayedRouteIndex - 0.8) - 112) / 12) * 130} 
-                        200,${180 - 25 - (((displayedRouteIndex + 0.4) - 112) / 12) * 130} 
-                        240,${180 - 25 - (((displayedRouteIndex + 0.8) - 112) / 12) * 130} 
-                        280,${180 - 25 - (((displayedRouteIndex + 0.5) - 112) / 12) * 130} 
-                        320,${180 - 25 - (((displayedRouteIndex + 0.1) - 112) / 12) * 130} 
-                        360,${180 - 25 - (((displayedRouteIndex + 0.3) - 112) / 12) * 130} 
-                        400,${180 - 25 - (((displayedRouteIndex + 1.1) - 112) / 12) * 130} 
-                        440,${180 - 25 - (((displayedRouteIndex + 0.6) - 112) / 12) * 130} 
-                        460,${180 - 25 - ((displayedRouteIndex - 112) / 12) * 130}`}
-                        />
-
-                        {/* Hourly Data Points */}
-                        {[
-                          { h: '00:00', x: 40, val: (displayedRouteIndex - 1.2).toFixed(1) },
-                          { h: '04:00', x: 120, val: (displayedRouteIndex - 1.7).toFixed(1) },
-                          { h: '08:00', x: 200, val: (displayedRouteIndex + 0.4).toFixed(1) },
-                          { h: '12:00', x: 280, val: (displayedRouteIndex + 0.5).toFixed(1) },
-                          { h: '16:00', x: 360, val: (displayedRouteIndex + 0.3).toFixed(1) },
-                          { h: '20:00', x: 440, val: (displayedRouteIndex + 0.6).toFixed(1) },
-                        ].map((pt, idx) => {
-                          const y = 180 - 25 - ((Number(pt.val) - 112) / 12) * 130
-                          const isHovered = hoveredHourlyPoint === idx
-                          return (
-                            <g
-                              key={pt.h}
-                              className="cursor-pointer"
-                              onMouseEnter={() => setHoveredHourlyPoint(idx)}
-                              onMouseLeave={() => setHoveredHourlyPoint(null)}
-                            >
-                              <circle
-                                cx={pt.x}
-                                cy={y}
-                                r={isHovered ? 6 : 4}
-                                fill={isHovered ? '#0b2545' : '#1e3a8a'}
-                                stroke="#ffffff"
-                                strokeWidth="2"
+                            <>
+                              {ticks.map((v) => {
+                                const y = hy(v)
+                                return (
+                                  <g key={v}>
+                                    <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                                    <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                      {v.toFixed(1)}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                              <polygon
+                                points={`${polyPts} 460,155 40,155`}
+                                fill="url(#routeHourlyGrad)"
                               />
-                              <text x={pt.x} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                                {pt.h}
-                              </text>
-                            </g>
+                              <polyline
+                                fill="none"
+                                stroke="#0b2545"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                points={polyPts}
+                              />
+                              {points6.map((pt, idx) => {
+                                const y = hy(pt.val)
+                                const isHovered = hoveredHourlyPoint === idx
+                                return (
+                                  <g
+                                    key={pt.h}
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => setHoveredHourlyPoint(idx)}
+                                    onMouseLeave={() => setHoveredHourlyPoint(null)}
+                                  >
+                                    <circle
+                                      cx={pt.x}
+                                      cy={y}
+                                      r={isHovered ? 6 : 4}
+                                      fill={isHovered ? '#0b2545' : '#1e3a8a'}
+                                      stroke="#ffffff"
+                                      strokeWidth="2"
+                                    />
+                                    <text x={pt.x} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
+                                      {pt.h}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                            </>
                           )
-                        })}
+                        })()}
                       </svg>
 
                       {/* Hourly Tooltip */}
@@ -1253,8 +1218,71 @@ export default function RouteAnalytics({ onBackToLanding, onGoToDashboard }) {
                                 </text>
                               )}
                             </g>
+                        {/* Dynamic Y-axis - compute bounds from actual daily route index values */}
+                        {(() => {
+                          const dailyDeltas = [-2.8, -2.1, -1.4, -1.6, -0.8, -0.3, 0]
+                          const dailyXs = [40, 110, 180, 250, 320, 390, 460]
+                          const dailyDates = ['29 Aug', '30 Aug', '31 Aug', '01 Sep', '02 Sep', '03 Sep', '04 Sep']
+                          const vals = dailyDeltas.map((d) => displayedRouteIndex + d)
+                          const rMin = Math.max(0, Math.floor(Math.min(...vals) - 1))
+                          const rMax = Math.ceil(Math.max(...vals) + 1)
+                          const rRange = Math.max(rMax - rMin, 1)
+                          const dy = (v) => 155 - ((v - rMin) / rRange) * 130
+                          const polyPts = dailyDeltas.map((d, i) => `${dailyXs[i]},${dy(displayedRouteIndex + d)}`).join(' ')
+                          const ticks = [rMin + (rRange / 3), rMin + (rRange * 2 / 3), rMax]
+                          return (
+                            <>
+                              {ticks.map((v) => {
+                                const y = dy(v)
+                                return (
+                                  <g key={v}>
+                                    <line x1="40" y1={y} x2="460" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                                    <text x="32" y={y + 4} fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                      {v.toFixed(1)}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                              <polygon
+                                points={`${polyPts} 460,155 40,155`}
+                                fill="url(#routeDailyGrad)"
+                              />
+                              <polyline
+                                fill="none"
+                                stroke="#15803d"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                points={polyPts}
+                              />
+                              {dailyDeltas.map((delta, idx) => {
+                                const val = displayedRouteIndex + delta
+                                const y = dy(val)
+                                const isHovered = hoveredDailyPoint === idx
+                                return (
+                                  <g
+                                    key={dailyDates[idx]}
+                                    className="cursor-pointer"
+                                    onMouseEnter={() => setHoveredDailyPoint(idx)}
+                                    onMouseLeave={() => setHoveredDailyPoint(null)}
+                                  >
+                                    <circle
+                                      cx={dailyXs[idx]}
+                                      cy={y}
+                                      r={isHovered ? 6 : 4}
+                                      fill={isHovered ? '#15803d' : '#16a34a'}
+                                      stroke="#ffffff"
+                                      strokeWidth="2"
+                                    />
+                                    <text x={dailyXs[idx]} y="172" fill="#64748b" fontSize="9" fontFamily="monospace" textAnchor="middle">
+                                      {dailyDates[idx]}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                            </>
                           )
-                        })}
+                        })()}
                       </svg>
 
                       {/* Daily Tooltip */}

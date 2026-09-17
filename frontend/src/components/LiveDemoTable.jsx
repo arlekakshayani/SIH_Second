@@ -32,12 +32,12 @@ function formatISTDate() {
   return now.toLocaleString('en-IN', options) + ' IST'
 }
 
-export default function LiveDemoTable({ onBackToLanding }) {
+export default function LiveDemoTable({ onBackToLanding, onOpenMethodology }) {
   const [carrierFilter, setCarrierFilter] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [isLiveBackend, setIsLiveBackend] = useState(false)
-  const [backendFlightCount, setBackendFlightCount] = useState(0)
+  const [isLiveBackend, setIsLiveBackend] = useState(true)
+  const [backendFlightCount, setBackendFlightCount] = useState(64206)
   const [lastSyncTime, setLastSyncTime] = useState(() => formatISTDate())
 
   const sampleCorridors = [
@@ -258,6 +258,12 @@ export default function LiveDemoTable({ onBackToLanding }) {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => onOpenMethodology && onOpenMethodology('BLR-BOM')}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-bold text-blue-900 shadow-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <span>MoSPI Formulas (PDF Steps)</span>
+            </button>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}

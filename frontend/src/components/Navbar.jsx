@@ -62,7 +62,7 @@ export default function Navbar({ currentView, onNavigate }) {
             })}
           </div>
 
-          {/* 3. Right: Admin Action Button */}
+          {/* 3. Right: Admin / Dashboard Action Button */}
           <div className="hidden sm:flex items-center gap-3">
             <button
               onClick={() => onNavigate('dashboard')}
@@ -73,7 +73,7 @@ export default function Navbar({ currentView, onNavigate }) {
               }`}
             >
               <Terminal className="w-3.5 h-3.5" />
-              <span>Admin Page</span>
+              <span>Admin / Dashboard</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
@@ -84,7 +84,7 @@ export default function Navbar({ currentView, onNavigate }) {
               onClick={() => onNavigate('dashboard')}
               className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300"
             >
-              Admin
+              Dashboard
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

@@ -1,0 +1,26 @@
+rank,route_code,origin,destination,origin_city,destination_city,origin_operator,destination_operator,category,directional_pax_annual,city_pair_total_pax,dgca_weight,dgca_weight_pct
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,DIAL,CSMIA,Trunk Business & Commercial,3426228,6850869,0.089012,8.901
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,CSMIA,DIAL,Trunk Business & Commercial,3424641,6850869,0.088971,8.897
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,DIAL,BIAL,Tech Corridor Trunk,2350018,4681042,0.061053,6.105
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,BIAL,DIAL,Tech Corridor Trunk,2331024,4681042,0.060559,6.056
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,CSMIA,BIAL,Finance & Tech Corridor,2083737,4114574,0.054135,5.414
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,BIAL,CSMIA,Finance & Tech Corridor,2030837,4114574,0.052761,5.276
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,DIAL,GHIAL,Metro High-Density,1638188,3295918,0.04256,4.256
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,GHIAL,DIAL,Metro High-Density,1657730,3295918,0.043067,4.307
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,DIAL,AAI,Industrial & Academic Corridor,1469849,2924045,0.038186,3.819
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,AAI,DIAL,Industrial & Academic Corridor,1454196,2924045,0.037779,3.778
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,DIAL,AAI,Eastern Metro Trunk,1417339,2770386,0.036822,3.682
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,AAI,DIAL,Eastern Metro Trunk,1353047,2770386,0.035152,3.515
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,DIAL,AAI,Corporate & Transit,1230642,2452761,0.031972,3.197
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,AAI,DIAL,Corporate & Transit,1222119,2452761,0.03175,3.175
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,CSMIA,GHIAL,Commercial Transit,1186691,2353279,0.03083,3.083
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,GHIAL,CSMIA,Commercial Transit,1166588,2353279,0.030308,3.031
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,BIAL,AAI,Tech & Transit Corridor,1180899,2326980,0.030679,3.068
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,AAI,BIAL,Tech & Transit Corridor,1146081,2326980,0.029775,2.978
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,BIAL,GHIAL,South Regional Short-Haul,1153136,2293602,0.029958,2.996
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,GHIAL,BIAL,South Regional Short-Haul,1140466,2293602,0.029629,2.963
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,CSMIA,AAI,Metro Commercial Transit,1066489,2112927,0.027707,2.771
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,AAI,CSMIA,Metro Commercial Transit,1046438,2112927,0.027186,2.719
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),DIAL,AAI,North-to-Leisure Trunk,774678,1561827,0.020126,2.013
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,AAI,DIAL,North-to-Leisure Trunk,787149,1561827,0.02045,2.045
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),CSMIA,AAI,High-Frequency Leisure Corridor,753390,1501390,0.019573,1.957

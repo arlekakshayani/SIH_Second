@@ -26,6 +26,21 @@ export default function HeroSection({ onNavigate }) {
   const [lastUpdatedTime, setLastUpdatedTime] = useState('')
   const [liveFaresCount, setLiveFaresCount] = useState(12450)
   const [liveIndexValue, setLiveIndexValue] = useState(147.8)
+import {
+  calculateNationalIndex,
+  getDailyTrajectory,
+  getHourlyDiurnalTrajectory,
+  getLiveScrapedCorridors,
+  getEconometricMetadata
+} from '../services/airfareCalculationEngine'
+
+export default function HeroSection({ onNavigate, onOpenMethodology }) {
+  const [activeGraphTab, setActiveGraphTab] = useState('daily') // 'hourly' | 'daily'
+  const [hoveredHourlyPoint, setHoveredHourlyPoint] = useState(null)
+  const [hoveredDailyPoint, setHoveredDailyPoint] = useState(null)
+  const [lastUpdatedTime, setLastUpdatedTime] = useState('')
+  const [liveFaresCount, setLiveFaresCount] = useState(64206)
+  const [liveIndexValue, setLiveIndexValue] = useState(() => calculateNationalIndex('latest', 'laspeyres').indexValue)
 
   const sampleCorridors = [
     {
@@ -180,18 +195,17 @@ export default function HeroSection({ onNavigate }) {
     return data
   }
 
-  const [hourlyData, setHourlyData] = useState(() => getISTHourlyData())
+  const [hourlyData, setHourlyData] = useState(() => getHourlyDiurnalTrajectory(liveIndexValue))
 
-  const dailyIndexData = [
-    { day: '05 Sep', avgIndex: 144.5, totalFares: 12140 },
-    { day: '06 Sep', avgIndex: 145.2, totalFares: 12380 },
-    { day: '07 Sep', avgIndex: 145.8, totalFares: 12420 },
-    { day: '08 Sep', avgIndex: 146.4, totalFares: 12510 },
-    { day: '09 Sep', avgIndex: 146.9, totalFares: 12290 },
-    { day: '10 Sep', avgIndex: 147.2, totalFares: 12470 },
-    { day: '11 Sep', avgIndex: 147.6, totalFares: 12610 },
-    { day: '12 Sep', avgIndex: 147.8, totalFares: 12450 },
-  ]
+  const dailyIndexData = useMemo(() => {
+    const traj = getDailyTrajectory('laspeyres')
+    return traj.map((pt) => ({
+      day: pt.date,
+      avgIndex: pt.index,
+      totalFares: 5350,
+      baseline: pt.baseline,
+    }))
+  }, [])
 
   useEffect(() => {
     setLastUpdatedTime(formatISTDateWithSuffix())
@@ -237,25 +251,44 @@ export default function HeroSection({ onNavigate }) {
 
   const filteredCorridors = corridorList
 
+  // Banner slides for auto cross-fade hero section
+  const assetSlides = [
+    { id: 'slide-1', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80', title: 'Indian Airport Operations' },
+    { id: 'slide-2', img: 'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=1600&q=80', title: 'Aerial View of Flight Routes' },
+    { id: 'slide-3', img: 'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=1600&q=80', title: 'Civil Aviation India' },
+  ]
+  const [currentSlide, setCurrentSlide] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setCurrentSlide(s => (s + 1) % assetSlides.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+
   // SVG dimensions for Graph
   const svgWidth = 520
   const svgHeight = 175
   const padX = 35
   const padY = 20
-  const hourlyMin = 142
-  const hourlyMax = 150
+  // Dynamic Y-axis bounds derived from actual data (real index ~100-110, not 142-150)
+  const hourlyValues = hourlyData.length > 0 ? hourlyData.map((d) => d.index) : [100]
+  const hourlyMin = Math.max(0, Math.floor(Math.min(...hourlyValues) - 2))
+  const hourlyMax = Math.ceil(Math.max(...hourlyValues) + 2)
 
-  const getHourlyY = (val) => svgHeight - padY - ((val - hourlyMin) / (hourlyMax - hourlyMin)) * (svgHeight - padY * 2)
-  const getHourlyX = (idx) => padX + (idx / (hourlyData.length - 1)) * (svgWidth - padX * 2)
+  const getHourlyY = (val) => svgHeight - padY - ((val - hourlyMin) / Math.max(hourlyMax - hourlyMin, 1)) * (svgHeight - padY * 2)
+  const getHourlyX = (idx) => padX + (idx / Math.max(hourlyData.length - 1, 1)) * (svgWidth - padX * 2)
   const hourlyPointsStr = hourlyData.map((d, i) => `${getHourlyX(i)},${getHourlyY(d.index)}`).join(' ')
-  const hourlyAreaPoints = `${getHourlyX(0)},${getHourlyY(hourlyData[0].index)} ${hourlyPointsStr} ${getHourlyX(hourlyData.length - 1)},${svgHeight - padY} ${getHourlyX(0)},${svgHeight - padY}`
+  const hourlyAreaPoints = hourlyData.length > 0
+    ? `${getHourlyX(0)},${getHourlyY(hourlyData[0].index)} ${hourlyPointsStr} ${getHourlyX(hourlyData.length - 1)},${svgHeight - padY} ${getHourlyX(0)},${svgHeight - padY}`
+    : ''
 
-  const dailyMin = 142
-  const dailyMax = 150
-  const getDailyY = (val) => svgHeight - padY - ((val - dailyMin) / (dailyMax - dailyMin)) * (svgHeight - padY * 2)
-  const getDailyX = (idx) => padX + (idx / (dailyIndexData.length - 1)) * (svgWidth - padX * 2)
+  const dailyValues = dailyIndexData.length > 0 ? dailyIndexData.map((d) => d.avgIndex) : [100]
+  const dailyMin = Math.max(0, Math.floor(Math.min(...dailyValues) - 2))
+  const dailyMax = Math.ceil(Math.max(...dailyValues) + 3)
+  const getDailyY = (val) => svgHeight - padY - ((val - dailyMin) / Math.max(dailyMax - dailyMin, 1)) * (svgHeight - padY * 2)
+  const getDailyX = (idx) => padX + (idx / Math.max(dailyIndexData.length - 1, 1)) * (svgWidth - padX * 2)
   const dailyPointsStr = dailyIndexData.map((d, i) => `${getDailyX(i)},${getDailyY(d.avgIndex)}`).join(' ')
-  const dailyAreaPoints = `${getDailyX(0)},${getDailyY(dailyIndexData[0].avgIndex)} ${dailyPointsStr} ${getDailyX(dailyIndexData.length - 1)},${svgHeight - padY} ${getDailyX(0)},${svgHeight - padY}`
+  const dailyAreaPoints = dailyIndexData.length > 0
+    ? `${getDailyX(0)},${getDailyY(dailyIndexData[0].avgIndex)} ${dailyPointsStr} ${getDailyX(dailyIndexData.length - 1)},${svgHeight - padY} ${getDailyX(0)},${svgHeight - padY}`
+    : ''
 
   return (
     <div className="w-full bg-[#f4f6f9] text-slate-800">
@@ -297,6 +330,13 @@ export default function HeroSection({ onNavigate }) {
             >
               <span>Route Tracker Analytics</span>
               <Activity className="w-4 h-4 text-yellow-300" />
+            </button>
+            <button
+              onClick={() => onOpenMethodology && onOpenMethodology('BLR-BOM')}
+              className="px-6 py-3 rounded-xl bg-blue-600/90 hover:bg-blue-500 text-white border border-blue-400/40 backdrop-blur-md font-bold text-xs sm:text-sm uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center gap-2 shadow-lg"
+            >
+              <BarChart3 className="w-4 h-4 text-amber-300" />
+              <span>MoSPI Formulas (PDF Steps)</span>
             </button>
           </div>
 
@@ -469,18 +509,25 @@ export default function HeroSection({ onNavigate }) {
                         </linearGradient>
                       </defs>
 
-                      {/* Horizontal Grid lines */}
-                      {[144, 147, 150].map((val) => {
-                        const y = getHourlyY(val)
-                        return (
-                          <g key={val}>
-                            <line x1={padX} y1={y} x2={svgWidth - padX} y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                            <text x={padX - 8} y={y + 3} fill="#94a3b8" fontSize="9" fontFamily="monospace" textAnchor="end">
-                              {val}
-                            </text>
-                          </g>
-                        )
-                      })}
+                      {/* Horizontal Grid lines - dynamic based on current tab's range */}
+                      {(() => {
+                        const isHourly = activeGraphTab === 'hourly'
+                        const gMin = isHourly ? hourlyMin : dailyMin
+                        const gMax = isHourly ? hourlyMax : dailyMax
+                        const getY = isHourly ? getHourlyY : getDailyY
+                        const step = (gMax - gMin) / 3
+                        return [gMin + step, gMin + step * 2, gMax].map((val) => {
+                          const y = getY(val)
+                          return (
+                            <g key={val}>
+                              <line x1={padX} y1={y} x2={svgWidth - padX} y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                              <text x={padX - 8} y={y + 3} fill="#94a3b8" fontSize="9" fontFamily="monospace" textAnchor="end">
+                                {val.toFixed(1)}
+                              </text>
+                            </g>
+                          )
+                        })
+                      })()}
 
                       {/* Area Fill */}
                       <polygon points={activeGraphTab === 'hourly' ? hourlyAreaPoints : dailyAreaPoints} fill="url(#searchChartGradient)" />

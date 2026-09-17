@@ -1,0 +1,126 @@
+rank,route_code,origin,destination,origin_city,destination_city,corridor_category,horizon_code,advance_days,horizon_weight,horizon_description,route_annual_pax,estimated_annual_pax_horizon,estimated_monthly_pax_horizon,estimated_daily_pax_horizon,route_dgca_weight,effective_joint_weight
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,Trunk Business & Commercial,T1,1,0.15,Last-minute emergency / high-priority corporate,3426228,513934,42828,1408,0.089012,0.013352
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,Trunk Business & Commercial,T7,7,0.35,Short-horizon urgent business & personal,3426228,1199180,99932,3285,0.089012,0.031154
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,Trunk Business & Commercial,T15,15,0.25,Standard planned domestic travel,3426228,856557,71380,2347,0.089012,0.022253
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,Trunk Business & Commercial,T30,30,0.15,Advance baseline and vacation travel,3426228,513934,42828,1408,0.089012,0.013352
+1,DEL-BOM,DEL,BOM,Delhi,Mumbai,Trunk Business & Commercial,T45,45,0.1,Early-bird discount and low-fare baseline,3426228,342623,28552,939,0.089012,0.008901
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,Trunk Business & Commercial,T1,1,0.15,Last-minute emergency / high-priority corporate,3424641,513696,42808,1407,0.088971,0.013346
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,Trunk Business & Commercial,T7,7,0.35,Short-horizon urgent business & personal,3424641,1198624,99885,3284,0.088971,0.03114
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,Trunk Business & Commercial,T15,15,0.25,Standard planned domestic travel,3424641,856160,71347,2346,0.088971,0.022243
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,Trunk Business & Commercial,T30,30,0.15,Advance baseline and vacation travel,3424641,513696,42808,1407,0.088971,0.013346
+2,BOM-DEL,BOM,DEL,Mumbai,Delhi,Trunk Business & Commercial,T45,45,0.1,Early-bird discount and low-fare baseline,3424641,342464,28539,938,0.088971,0.008897
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,Tech Corridor Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,2350018,352503,29375,966,0.061053,0.009158
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,Tech Corridor Trunk,T7,7,0.35,Short-horizon urgent business & personal,2350018,822506,68542,2253,0.061053,0.021369
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,Tech Corridor Trunk,T15,15,0.25,Standard planned domestic travel,2350018,587504,48959,1610,0.061053,0.015263
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,Tech Corridor Trunk,T30,30,0.15,Advance baseline and vacation travel,2350018,352503,29375,966,0.061053,0.009158
+3,DEL-BLR,DEL,BLR,Delhi,Bengaluru,Tech Corridor Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,2350018,235002,19584,644,0.061053,0.006105
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,Tech Corridor Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,2331024,349654,29138,958,0.060559,0.009084
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,Tech Corridor Trunk,T7,7,0.35,Short-horizon urgent business & personal,2331024,815858,67988,2235,0.060559,0.021196
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,Tech Corridor Trunk,T15,15,0.25,Standard planned domestic travel,2331024,582756,48563,1597,0.060559,0.01514
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,Tech Corridor Trunk,T30,30,0.15,Advance baseline and vacation travel,2331024,349654,29138,958,0.060559,0.009084
+4,BLR-DEL,BLR,DEL,Bengaluru,Delhi,Tech Corridor Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,2331024,233102,19425,639,0.060559,0.006056
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,Finance & Tech Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,2083737,312561,26047,856,0.054135,0.00812
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,Finance & Tech Corridor,T7,7,0.35,Short-horizon urgent business & personal,2083737,729308,60776,1998,0.054135,0.018947
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,Finance & Tech Corridor,T15,15,0.25,Standard planned domestic travel,2083737,520934,43411,1427,0.054135,0.013534
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,Finance & Tech Corridor,T30,30,0.15,Advance baseline and vacation travel,2083737,312561,26047,856,0.054135,0.00812
+5,BOM-BLR,BOM,BLR,Mumbai,Bengaluru,Finance & Tech Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,2083737,208374,17364,571,0.054135,0.005414
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,Finance & Tech Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,2030837,304626,25386,835,0.052761,0.007914
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,Finance & Tech Corridor,T7,7,0.35,Short-horizon urgent business & personal,2030837,710793,59233,1947,0.052761,0.018466
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,Finance & Tech Corridor,T15,15,0.25,Standard planned domestic travel,2030837,507709,42309,1391,0.052761,0.01319
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,Finance & Tech Corridor,T30,30,0.15,Advance baseline and vacation travel,2030837,304626,25386,835,0.052761,0.007914
+6,BLR-BOM,BLR,BOM,Bengaluru,Mumbai,Finance & Tech Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,2030837,203084,16924,556,0.052761,0.005276
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,Metro High-Density,T1,1,0.15,Last-minute emergency / high-priority corporate,1638188,245728,20477,673,0.04256,0.006384
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,Metro High-Density,T7,7,0.35,Short-horizon urgent business & personal,1638188,573366,47780,1571,0.04256,0.014896
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,Metro High-Density,T15,15,0.25,Standard planned domestic travel,1638188,409547,34129,1122,0.04256,0.01064
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,Metro High-Density,T30,30,0.15,Advance baseline and vacation travel,1638188,245728,20477,673,0.04256,0.006384
+7,DEL-HYD,DEL,HYD,Delhi,Hyderabad,Metro High-Density,T45,45,0.1,Early-bird discount and low-fare baseline,1638188,163819,13652,449,0.04256,0.004256
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,Metro High-Density,T1,1,0.15,Last-minute emergency / high-priority corporate,1657730,248660,20722,681,0.043067,0.00646
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,Metro High-Density,T7,7,0.35,Short-horizon urgent business & personal,1657730,580206,48350,1590,0.043067,0.015073
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,Metro High-Density,T15,15,0.25,Standard planned domestic travel,1657730,414432,34536,1135,0.043067,0.010767
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,Metro High-Density,T30,30,0.15,Advance baseline and vacation travel,1657730,248660,20722,681,0.043067,0.00646
+8,HYD-DEL,HYD,DEL,Hyderabad,Delhi,Metro High-Density,T45,45,0.1,Early-bird discount and low-fare baseline,1657730,165773,13814,454,0.043067,0.004307
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,Industrial & Academic Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,1469849,220477,18373,604,0.038186,0.005728
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,Industrial & Academic Corridor,T7,7,0.35,Short-horizon urgent business & personal,1469849,514447,42871,1409,0.038186,0.013365
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,Industrial & Academic Corridor,T15,15,0.25,Standard planned domestic travel,1469849,367462,30622,1007,0.038186,0.009546
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,Industrial & Academic Corridor,T30,30,0.15,Advance baseline and vacation travel,1469849,220477,18373,604,0.038186,0.005728
+9,DEL-PNQ,DEL,PNQ,Delhi,Pune,Industrial & Academic Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,1469849,146985,12249,403,0.038186,0.003819
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,Industrial & Academic Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,1454196,218129,18177,598,0.037779,0.005667
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,Industrial & Academic Corridor,T7,7,0.35,Short-horizon urgent business & personal,1454196,508969,42414,1394,0.037779,0.013223
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,Industrial & Academic Corridor,T15,15,0.25,Standard planned domestic travel,1454196,363549,30296,996,0.037779,0.009445
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,Industrial & Academic Corridor,T30,30,0.15,Advance baseline and vacation travel,1454196,218129,18177,598,0.037779,0.005667
+10,PNQ-DEL,PNQ,DEL,Pune,Delhi,Industrial & Academic Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,1454196,145420,12118,398,0.037779,0.003778
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,Eastern Metro Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,1417339,212601,17717,582,0.036822,0.005523
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,Eastern Metro Trunk,T7,7,0.35,Short-horizon urgent business & personal,1417339,496069,41339,1359,0.036822,0.012888
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,Eastern Metro Trunk,T15,15,0.25,Standard planned domestic travel,1417339,354335,29528,971,0.036822,0.009206
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,Eastern Metro Trunk,T30,30,0.15,Advance baseline and vacation travel,1417339,212601,17717,582,0.036822,0.005523
+11,DEL-CCU,DEL,CCU,Delhi,Kolkata,Eastern Metro Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,1417339,141734,11811,388,0.036822,0.003682
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,Eastern Metro Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,1353047,202957,16913,556,0.035152,0.005273
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,Eastern Metro Trunk,T7,7,0.35,Short-horizon urgent business & personal,1353047,473566,39464,1297,0.035152,0.012303
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,Eastern Metro Trunk,T15,15,0.25,Standard planned domestic travel,1353047,338262,28188,927,0.035152,0.008788
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,Eastern Metro Trunk,T30,30,0.15,Advance baseline and vacation travel,1353047,202957,16913,556,0.035152,0.005273
+12,CCU-DEL,CCU,DEL,Kolkata,Delhi,Eastern Metro Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,1353047,135305,11275,371,0.035152,0.003515
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,Corporate & Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1230642,184596,15383,506,0.031972,0.004796
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,Corporate & Transit,T7,7,0.35,Short-horizon urgent business & personal,1230642,430725,35894,1180,0.031972,0.01119
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,Corporate & Transit,T15,15,0.25,Standard planned domestic travel,1230642,307660,25638,843,0.031972,0.007993
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,Corporate & Transit,T30,30,0.15,Advance baseline and vacation travel,1230642,184596,15383,506,0.031972,0.004796
+13,DEL-MAA,DEL,MAA,Delhi,Chennai,Corporate & Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1230642,123064,10255,337,0.031972,0.003197
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,Corporate & Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1222119,183318,15276,502,0.03175,0.004763
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,Corporate & Transit,T7,7,0.35,Short-horizon urgent business & personal,1222119,427742,35645,1172,0.03175,0.011112
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,Corporate & Transit,T15,15,0.25,Standard planned domestic travel,1222119,305530,25461,837,0.03175,0.007938
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,Corporate & Transit,T30,30,0.15,Advance baseline and vacation travel,1222119,183318,15276,502,0.03175,0.004763
+14,MAA-DEL,MAA,DEL,Chennai,Delhi,Corporate & Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1222119,122212,10184,335,0.03175,0.003175
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,Commercial Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1186691,178004,14834,488,0.03083,0.004625
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,Commercial Transit,T7,7,0.35,Short-horizon urgent business & personal,1186691,415342,34612,1138,0.03083,0.01079
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,Commercial Transit,T15,15,0.25,Standard planned domestic travel,1186691,296673,24723,813,0.03083,0.007707
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,Commercial Transit,T30,30,0.15,Advance baseline and vacation travel,1186691,178004,14834,488,0.03083,0.004625
+15,BOM-HYD,BOM,HYD,Mumbai,Hyderabad,Commercial Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1186691,118669,9889,325,0.03083,0.003083
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,Commercial Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1166588,174988,14582,479,0.030308,0.004546
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,Commercial Transit,T7,7,0.35,Short-horizon urgent business & personal,1166588,408306,34026,1119,0.030308,0.010608
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,Commercial Transit,T15,15,0.25,Standard planned domestic travel,1166588,291647,24304,799,0.030308,0.007577
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,Commercial Transit,T30,30,0.15,Advance baseline and vacation travel,1166588,174988,14582,479,0.030308,0.004546
+16,HYD-BOM,HYD,BOM,Hyderabad,Mumbai,Commercial Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1166588,116659,9722,320,0.030308,0.003031
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,Tech & Transit Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,1180899,177135,14761,485,0.030679,0.004602
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,Tech & Transit Corridor,T7,7,0.35,Short-horizon urgent business & personal,1180899,413315,34443,1132,0.030679,0.010738
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,Tech & Transit Corridor,T15,15,0.25,Standard planned domestic travel,1180899,295225,24602,809,0.030679,0.00767
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,Tech & Transit Corridor,T30,30,0.15,Advance baseline and vacation travel,1180899,177135,14761,485,0.030679,0.004602
+17,BLR-CCU,BLR,CCU,Bengaluru,Kolkata,Tech & Transit Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,1180899,118090,9841,324,0.030679,0.003068
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,Tech & Transit Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,1146081,171912,14326,471,0.029775,0.004466
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,Tech & Transit Corridor,T7,7,0.35,Short-horizon urgent business & personal,1146081,401128,33427,1099,0.029775,0.010421
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,Tech & Transit Corridor,T15,15,0.25,Standard planned domestic travel,1146081,286520,23877,785,0.029775,0.007444
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,Tech & Transit Corridor,T30,30,0.15,Advance baseline and vacation travel,1146081,171912,14326,471,0.029775,0.004466
+18,CCU-BLR,CCU,BLR,Kolkata,Bengaluru,Tech & Transit Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,1146081,114608,9551,314,0.029775,0.002978
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,South Regional Short-Haul,T1,1,0.15,Last-minute emergency / high-priority corporate,1153136,172970,14414,474,0.029958,0.004494
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,South Regional Short-Haul,T7,7,0.35,Short-horizon urgent business & personal,1153136,403598,33633,1106,0.029958,0.010485
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,South Regional Short-Haul,T15,15,0.25,Standard planned domestic travel,1153136,288284,24024,790,0.029958,0.007489
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,South Regional Short-Haul,T30,30,0.15,Advance baseline and vacation travel,1153136,172970,14414,474,0.029958,0.004494
+19,BLR-HYD,BLR,HYD,Bengaluru,Hyderabad,South Regional Short-Haul,T45,45,0.1,Early-bird discount and low-fare baseline,1153136,115314,9610,316,0.029958,0.002996
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,South Regional Short-Haul,T1,1,0.15,Last-minute emergency / high-priority corporate,1140466,171070,14256,469,0.029629,0.004444
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,South Regional Short-Haul,T7,7,0.35,Short-horizon urgent business & personal,1140466,399163,33264,1094,0.029629,0.01037
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,South Regional Short-Haul,T15,15,0.25,Standard planned domestic travel,1140466,285116,23760,781,0.029629,0.007407
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,South Regional Short-Haul,T30,30,0.15,Advance baseline and vacation travel,1140466,171070,14256,469,0.029629,0.004444
+20,HYD-BLR,HYD,BLR,Hyderabad,Bengaluru,South Regional Short-Haul,T45,45,0.1,Early-bird discount and low-fare baseline,1140466,114047,9504,312,0.029629,0.002963
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,Metro Commercial Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1066489,159973,13331,438,0.027707,0.004156
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,Metro Commercial Transit,T7,7,0.35,Short-horizon urgent business & personal,1066489,373271,31106,1023,0.027707,0.009697
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,Metro Commercial Transit,T15,15,0.25,Standard planned domestic travel,1066489,266622,22218,730,0.027707,0.006927
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,Metro Commercial Transit,T30,30,0.15,Advance baseline and vacation travel,1066489,159973,13331,438,0.027707,0.004156
+21,BOM-MAA,BOM,MAA,Mumbai,Chennai,Metro Commercial Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1066489,106649,8887,292,0.027707,0.002771
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,Metro Commercial Transit,T1,1,0.15,Last-minute emergency / high-priority corporate,1046438,156966,13080,430,0.027186,0.004078
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,Metro Commercial Transit,T7,7,0.35,Short-horizon urgent business & personal,1046438,366253,30521,1003,0.027186,0.009515
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,Metro Commercial Transit,T15,15,0.25,Standard planned domestic travel,1046438,261610,21801,717,0.027186,0.006796
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,Metro Commercial Transit,T30,30,0.15,Advance baseline and vacation travel,1046438,156966,13080,430,0.027186,0.004078
+22,MAA-BOM,MAA,BOM,Chennai,Mumbai,Metro Commercial Transit,T45,45,0.1,Early-bird discount and low-fare baseline,1046438,104644,8720,287,0.027186,0.002719
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),North-to-Leisure Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,774678,116202,9684,318,0.020126,0.003019
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),North-to-Leisure Trunk,T7,7,0.35,Short-horizon urgent business & personal,774678,271137,22595,743,0.020126,0.007044
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),North-to-Leisure Trunk,T15,15,0.25,Standard planned domestic travel,774678,193670,16139,531,0.020126,0.005032
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),North-to-Leisure Trunk,T30,30,0.15,Advance baseline and vacation travel,774678,116202,9684,318,0.020126,0.003019
+23,DEL-GOI,DEL,GOI,Delhi,Goa (Dabolim),North-to-Leisure Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,774678,77468,6456,212,0.020126,0.002013
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,North-to-Leisure Trunk,T1,1,0.15,Last-minute emergency / high-priority corporate,787149,118072,9839,323,0.02045,0.003067
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,North-to-Leisure Trunk,T7,7,0.35,Short-horizon urgent business & personal,787149,275502,22958,755,0.02045,0.007157
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,North-to-Leisure Trunk,T15,15,0.25,Standard planned domestic travel,787149,196787,16399,539,0.02045,0.005112
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,North-to-Leisure Trunk,T30,30,0.15,Advance baseline and vacation travel,787149,118072,9839,323,0.02045,0.003067
+24,GOI-DEL,GOI,DEL,Goa (Dabolim),Delhi,North-to-Leisure Trunk,T45,45,0.1,Early-bird discount and low-fare baseline,787149,78715,6560,216,0.02045,0.002045
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),High-Frequency Leisure Corridor,T1,1,0.15,Last-minute emergency / high-priority corporate,753390,113008,9417,310,0.019573,0.002936
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),High-Frequency Leisure Corridor,T7,7,0.35,Short-horizon urgent business & personal,753390,263686,21974,722,0.019573,0.006851
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),High-Frequency Leisure Corridor,T15,15,0.25,Standard planned domestic travel,753390,188348,15696,516,0.019573,0.004893
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),High-Frequency Leisure Corridor,T30,30,0.15,Advance baseline and vacation travel,753390,113008,9417,310,0.019573,0.002936
+25,BOM-GOI,BOM,GOI,Mumbai,Goa (Dabolim),High-Frequency Leisure Corridor,T45,45,0.1,Early-bird discount and low-fare baseline,753390,75339,6278,206,0.019573,0.001957
