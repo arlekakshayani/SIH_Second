@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   TrendingUp,
   Database,
@@ -15,6 +15,17 @@ import {
   ArrowUpRight
 } from 'lucide-react'
 import { getLatestIndex, getFlights } from '../api'
+
+// Fixed background asset photo
+import rateImg from './assets/rate.jpeg'
+
+export default function HeroSection({ onNavigate }) {
+  const [activeGraphTab, setActiveGraphTab] = useState('hourly') // 'hourly' | 'daily'
+  const [hoveredHourlyPoint, setHoveredHourlyPoint] = useState(null)
+  const [hoveredDailyPoint, setHoveredDailyPoint] = useState(null)
+  const [lastUpdatedTime, setLastUpdatedTime] = useState('')
+  const [liveFaresCount, setLiveFaresCount] = useState(12450)
+  const [liveIndexValue, setLiveIndexValue] = useState(147.8)
 import {
   calculateNationalIndex,
   getDailyTrajectory,
@@ -282,29 +293,20 @@ export default function HeroSection({ onNavigate, onOpenMethodology }) {
   return (
     <div className="w-full bg-[#f4f6f9] text-slate-800">
       
-      {/* 1. AUTO-SCROLLING ASSET PHOTOS BANNER WITH NATIONAL AIRFARE INDEX NAME (No Search Bar) */}
+      {/* 1. PERMANENT RATE PHOTO BANNER WITH NATIONAL AIRFARE INDEX NAME */}
       <section className="banner-section inner relative h-[420px] sm:h-[460px] overflow-hidden flex items-center justify-center">
-        {/* Automatic cross-fade of the asset photos */}
-        {assetSlides.map((slide, idx) => (
-          <img
-            key={slide.id}
-            src={slide.img}
-            alt={slide.title}
-            className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
-              currentSlide === idx ? 'opacity-80' : 'opacity-0 pointer-events-none'
-            }`}
-          />
-        ))}
+        {/* Permanent rate.jpeg Background */}
+        <img
+          src={rateImg}
+          alt="National Airfare Rate Surveillance"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-85"
+        />
 
         {/* Ambient Dark Gradient Overlay for Crisp Text Legibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#061426]/80 via-[#0b2545]/65 to-[#061426]/90 pointer-events-none" />
 
         {/* Center Content: Prominent National Airfare Index Name */}
         <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500 text-slate-950 font-black text-xs sm:text-sm font-mono tracking-wider shadow-lg mb-4 animate-fade-in">
-            <Plane className="w-4 h-4" />
-            <span>NAI • OFFICIAL CIVIL AVIATION INTELLIGENCE</span>
-          </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-heading text-white tracking-tight uppercase drop-shadow-xl leading-none">
             National <span className="text-yellow-300">Airfare Index</span>
@@ -563,30 +565,6 @@ export default function HeroSection({ onNavigate, onOpenMethodology }) {
                   </div>
                 </div>
 
-                {/* Explore Full Registry Banner Callout */}
-                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-orange-50 text-orange-700 border border-orange-200">
-                      <Plane className="w-5 h-5 transform -rotate-45" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0b2545] font-heading">
-                        National Corridors Tariff Registry (142 Routes)
-                      </h4>
-                      <p className="text-xs text-slate-500 font-mono">
-                        View decomposed pure base fares, ancillary fees, and advance booking windows in the dedicated registry.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => onNavigate('corridors')}
-                    className="px-4 py-2 rounded-xl bg-[#0b2545] hover:bg-[#0c3c6f] text-white text-xs font-bold font-mono uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 cursor-pointer shadow-sm"
-                  >
-                    <span>Open Live Registry</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
-                  </button>
-                </div>
-
               </div>
             </div>
 
@@ -595,13 +573,6 @@ export default function HeroSection({ onNavigate, onOpenMethodology }) {
               
               {/* 1. "IN FOCUS" SPOTLIGHT WIDGET */}
               <div className="post-widget sow">
-                <h3>In Focus</h3>
-                <div className="widget-img">
-                  <img
-                    src="/hero-aviation-bg.jpg"
-                    alt="National Airfare Surveillance In Focus"
-                  />
-                </div>
                 <h4>National Airfare Index (NAI)</h4>
                 <p>
                   Official National Airfare Monitoring &amp; Real-Time Index System for empirical transport inflation surveillance and national price basket analytics, compliant with DGCA standards.

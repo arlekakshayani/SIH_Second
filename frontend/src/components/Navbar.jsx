@@ -24,8 +24,9 @@ export default function Navbar({ currentView, onNavigate }) {
             aria-label="National Airfare Index Home"
           >
             <img
+              id="navbar-logo"
               src={logoMark}
-              alt="National Airfare Index (NAI) Emblem"
+              alt="National Airfare Index (NAI) Logo"
               className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105"
             />
             <div className="flex flex-col justify-center leading-[1.04]">
